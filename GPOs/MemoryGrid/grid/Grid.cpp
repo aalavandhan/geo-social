@@ -4,8 +4,8 @@ Grid::Grid (){
 
     locations = new map<int , Point*>();
 
-    cout << "MIN_X = " << MIN_X << " MAX_X = " << MAX_X << " DELTA_X = " << DELTA_X << endl;
-    cout << "MIN_Y = " << MIN_Y << " MAX_Y = " << MAX_Y << " DELTA_Y = " << DELTA_Y << endl;
+    // cout << "MIN_X = " << MIN_X << " MAX_X = " << MAX_X << " DELTA_X = " << DELTA_X << endl;
+    // cout << "MIN_Y = " << MIN_Y << " MAX_Y = " << MAX_Y << " DELTA_Y = " << DELTA_Y << endl;
 
     for (int i=0; i<X; i++){
         for (int j=0; j<Y; j++){
@@ -18,7 +18,7 @@ Grid::Grid (){
         }
     }
 
-}     
+}
 
 
 Grid::~Grid (){
@@ -41,7 +41,7 @@ Cell* Grid::getCell(double x, double y){
         return table[q_x][q_y];
     else
         return NULL;
-}   
+}
 
 Cell* Grid::getCell(int i, int j){
 
@@ -69,7 +69,7 @@ bool Grid::addCheckIn(Point* user){
         cout << "checkin failed! (" << user->getX() <<", " << user->getY() << endl;
         return false;
     }
-} 
+}
 
 
 void Grid::updateCheckIn(Point* p, double old_x, double old_y){
@@ -219,7 +219,7 @@ void Grid::getNextNN(IncrVisitor& v, int k){
 
 //returns the rectangle for a direction and level
 // query cell (i, j)
-void Grid::getRectangle(int direction, int level, double x, double y, Cell& c){ 
+void Grid::getRectangle(int direction, int level, double x, double y, Cell& c){
 
     int i = (int)((x - MIN_X)/DELTA_X);
     int j = (int)((y - MIN_Y)/DELTA_Y);
@@ -232,7 +232,7 @@ void Grid::getRectangle(int direction, int level, double x, double y, Cell& c){
         y1 = (j + 1 + level)*DELTA_Y;
         x2 = (i + 2 + level)*DELTA_X;
         y2 = (j + 2 + level)*DELTA_Y;
-        
+
     }
     else if (direction == DOWN){
 
@@ -240,7 +240,7 @@ void Grid::getRectangle(int direction, int level, double x, double y, Cell& c){
         y1 = (j - 1 - level)*DELTA_Y;
         x2 = (i + 1 + level)*DELTA_X;
         y2 = (j - level)*DELTA_Y;
-        
+
     }
     else if (direction == RIGHT){
 
@@ -266,7 +266,7 @@ void Grid::getRectangle(int direction, int level, double x, double y, Cell& c){
     c.setDirection(direction);
     c.computeMinDist(x, y);
     c.setType(RECTANGLE);
-}         
+}
 
 
 
@@ -310,7 +310,7 @@ list<Cell*>* Grid::getIntersectedCellsWithRectangle(double x1, double y1, double
     }
 
     return result;
-} 
+}
 
 
 
@@ -558,8 +558,8 @@ vector<res_point*>* Grid::getkNN(double x, double y, int k){
 
 // 1. get the cells which are in the circle's MBR.
 // 2. for each one of these, check if it intersects the circle,
-// 3. if yes, get the checkins that are in the circle. 
-void Grid::getRange(double x, double y, double radius, Visitor& v){  
+// 3. if yes, get the checkins that are in the circle.
+void Grid::getRange(double x, double y, double radius, Visitor& v){
 
     Point* p = NULL;
     Cell* c = NULL;
@@ -601,8 +601,8 @@ void Grid::getRange(double x, double y, double radius, Visitor& v){
 
 // 1. get the cells which are in the circle's MBR.
 // 2. for each one of these, check if it intersects the circle,
-// 3. if yes, get the checkins that are in the circle. 
-vector<res_point*>* Grid::getRange(double x, double y, double radius){  
+// 3. if yes, get the checkins that are in the circle.
+vector<res_point*>* Grid::getRange(double x, double y, double radius){
 
     //    Cell* qPoint = NULL;
     //    qPoint=getCell(x,y);
@@ -839,14 +839,14 @@ bool Grid::loadFromFile(const char* fileName, int numOfFiles){
 
 	int fileNumber = 0;
 	while(fileNumber < numOfFiles){
-	
+
 		stringstream po;
 		po<<fileName<<"_"<<fileNumber<<".txt";
 		string tmp = po.str();
 		char *sentBuffer = new char[tmp.size()+1];
 		sentBuffer[tmp.size()]='\0';
 		memcpy(sentBuffer,tmp.c_str(),tmp.size());
-		
+
 		ifstream fin(sentBuffer);
 		if (! fin)
 		{

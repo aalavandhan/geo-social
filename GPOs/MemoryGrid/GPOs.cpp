@@ -27,7 +27,7 @@ GPOs::GPOs (char* gridFileName, int numOfFiles){
     computedNN = returnedNN = finalNextNN = 0;
     nextNNList = new vector<res_point*>();
     flagNextNN = true;
-}    
+}
 
 
 GPOs::GPOs (){
@@ -52,7 +52,7 @@ GPOs::GPOs (){
     computedNN = returnedNN = finalNextNN = 0;
     nextNNList = new vector<res_point*>();
     flagNextNN = true;
-}    
+}
 
 
 
@@ -120,14 +120,14 @@ res_point* GPOs::getNextNN(double x, double y){
     struct timeval start, end;
     gettimeofday(&start, NULL);
     startC = clock();
-	
+
 	if(pureNNexec == 0)
 		incrVis = new IncrVisitor(x, y);
-		
-	grid->getNextNN(*incrVis, 1);	
+
+	grid->getNextNN(*incrVis, 1);
 
 	pureNNexec++;
-	
+
 	endC = clock();
     totalCPUTime += (((double)(endC-startC)*1000.0)/(CLOCKS_PER_SEC));
     gettimeofday(&end, NULL);
@@ -361,16 +361,16 @@ bool GPOs::loadLocations(const char* fileName){
 bool GPOs::loadLocations(const char* fileName, int numOfFiles){
 
 	int fileNumber = 0;int count = 0;
-	
+
 	while(fileNumber < numOfFiles){
-	
+
 		stringstream po;
 		po<<fileName<<"_"<<fileNumber<<".txt";
 		string tmp = po.str();
 		char *sentBuffer = new char[tmp.size()+1];
 		sentBuffer[tmp.size()]='\0';
 		memcpy(sentBuffer,tmp.c_str(),tmp.size());
-		
+
 		ifstream fin(sentBuffer);
 		if (! fin)
 		{
@@ -378,11 +378,11 @@ bool GPOs::loadLocations(const char* fileName, int numOfFiles){
 			return false;
 		}
 
-		cout << "Loading from " << fileName <<"_"<<fileNumber<<".txt ...";
+		// cout << "Loading from " << fileName <<"_"<<fileNumber<<".txt ...";
 
 		int op, id;
 		double x1, x2, y1, y2;
-		
+
 		Point* u;
 
 		while (fin){
@@ -401,13 +401,13 @@ bool GPOs::loadLocations(const char* fileName, int numOfFiles){
 		}
 		fileNumber++;
 		fin.close();
-		cout<<" Loaded till "<<count<<" users"<<endl;
-		
+		// cout<<" Loaded till "<<count<<" users"<<endl;
+
 	}
 	if(numOfFiles == 1){
 		DATASET_SIZE = count;
 	}
-	cout << "Done! Total number of checkins: " <<  count << endl;
+	// cout << "Done! Total number of checkins: " <<  count << endl;
     return true;
 }
 
@@ -431,11 +431,11 @@ void GPOs::clearNextNN(){
     nextNNList = new vector<res_point*>();
     computedNN = returnedNN = finalNextNN = objects = 0;
     flagNextNN = true;
-	
+
 	pureNNexec = 0;
 
 	delete incrVis;
-	
+
 }
 
 double GPOs::estimateNearestDistance(double x, double y, int k){

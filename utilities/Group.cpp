@@ -46,7 +46,7 @@ Group::Group(res_point* user){
     f = strcpy(f, (char *)"sum");
     longest_dist_i = 0;
     finished_flag = false;
-	
+
 }
 
 
@@ -57,7 +57,7 @@ Group::~Group(){
         friends->pop();
     }
     delete friends;
-}	
+}
 
 
 Group::Group(Group* g){
@@ -111,7 +111,7 @@ double Group::getMaxDist(){
 
 double Group::getAdist(){
     return adist;
-}       
+}
 
 
 priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>* Group::getFriends(){
@@ -128,7 +128,7 @@ void Group::addFriend(res_point* _friend){
         if(_friend->dist > max_dist)
             max_dist = _friend->dist;
     }
-}   
+}
 
 bool Group::finished(){
     return finished_flag;
@@ -164,19 +164,21 @@ void Group::updateLongestDist(double distance){
 
 double Group::getLongestDistance(){
     return longest_dist;
-} 
+}
 
 
 int Group::size(){
     return friends->size()+1;
-} 
+}
 
 
 void Group::print(){
-    cout <<"--------------------------------------" << endl;
-    cout << "User ID = " << id << " distance = " << user_dist <<" | "<<user_dist*(EARTH_CIRCUMFERENCE/360)<<" km"<<endl;
-	cout<<"Friends Size = "<<friends->size()<<endl;
-    cout << "Friends = {";
+    // cout <<"--------------------------------------" << endl;
+    cout << id << "," << user_dist*(EARTH_CIRCUMFERENCE/360) << "," << score << "," << friends->size() << endl;
+
+ //    cout << "User ID = " << id << " distance = " << user_dist <<" | "<<user_dist*(EARTH_CIRCUMFERENCE/360)<<" km"<<endl;
+	// cout<<"Friends Size = "<<friends->size()<<endl;
+ //    cout << "Friends = {";
     priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>* tmp = new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
 
     while(!friends->empty()) {
@@ -188,18 +190,21 @@ void Group::print(){
     while(!tmp->empty()) {
         res_point* c = tmp->top();
         friends->push(c);
-        cout << "(" << c->id << ", " << c->dist <<" | "<<c->dist*(EARTH_CIRCUMFERENCE/360)<<" km"<< "), ";
+        // cout << "(" << c->id << ", " << c->dist <<" | "<<c->dist*(EARTH_CIRCUMFERENCE/360)<<" km"<< "), ";
+        cout << c->id << "," << c->dist *(EARTH_CIRCUMFERENCE/360) << endl;
         tmp->pop();
     }
-	if(friends->empty())
-		cout << "}" << endl;
-	else
-		cout << "\b\b}" << endl;
-    cout << "adist = " << adist <<" | "<<adist*(EARTH_CIRCUMFERENCE/360)<<" km"<<endl;
-    cout << "max_dist = " << max_dist <<" | "<<max_dist*(EARTH_CIRCUMFERENCE/360)<<" km"<<endl;
-    cout << "user score = " << score << endl;
-    cout <<"--------------------------------------" << endl;
-}        
+	if(friends->empty()){
+		// cout << "}" << endl;
+    }
+	else{
+		// cout << "\b\b}" << endl;
+    }
+    // cout << "adist = " << adist <<" | "<<adist*(EARTH_CIRCUMFERENCE/360)<<" km"<<endl;
+    // cout << "max_dist = " << max_dist <<" | "<<max_dist*(EARTH_CIRCUMFERENCE/360)<<" km"<<endl;
+    // cout << "user score = " << score << endl;
+    // cout <<"--------------------------------------" << endl;
+}
 
 
 struct int_comparator_descending{

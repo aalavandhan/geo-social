@@ -1,6 +1,6 @@
 #include "../../headersMemory.h"
 
-SPOs::SPOs() { 
+SPOs::SPOs() {
     areFriendsExecutions = getFriendsExecutions = 0;
     totalCPUTime = totalTime = 0.0;
 }
@@ -31,13 +31,13 @@ int SPOs::load(const char* file){
     ifstream fin(file);
     if (!fin){
         cout << "Cannot open Social graph file " << file << endl;
-        return -1;
+        // return -1;
     }
 
     int id, size;
     unsigned int times = 0;
     int totalFriends = 0;
-    cout << "Loading the Social Graph from " << file << endl;
+    // cout << "Loading the Social Graph from " << file << endl;
     Value* entry;
     while(fin){ //NUMOFUSERS
 
@@ -66,9 +66,9 @@ int SPOs::load(const char* file){
     }
     fin.clear();
     fin.close();
-    cout << times << endl;
-    cout << "Done!" << endl;
-    cout << "totalFriends = " << (totalFriends/(1024)) << "KB" << endl;
+    // cout << times << endl;
+    // cout << "Done!" << endl;
+    // cout << "totalFriends = " << (totalFriends/(1024)) << "KB" << endl;
     return 0;
 }
 
@@ -78,14 +78,14 @@ int SPOs::load(const char* file, int count){
 	int totalFriends = 0;
 	int fileNumber = 0;
 	while(fileNumber < count)	{
-		
+
 		stringstream po;
 		po<<file<<"_"<<fileNumber<<".txt";
 		string tmp = po.str();
 		char *sentBuffer = new char[tmp.size()+1];
 		sentBuffer[tmp.size()]='\0';
 		memcpy(sentBuffer,tmp.c_str(),tmp.size());
-		
+
 		ifstream fin(sentBuffer);
 		if (!fin){
 			cout << "Cannot open Social graph file " << tmp << endl;
@@ -94,7 +94,7 @@ int SPOs::load(const char* file, int count){
 
 		int id, size;
 
-		cout << "Loading the Social Graph from " << tmp <<" ... ";
+		// cout << "Loading the Social Graph from " << tmp <<" ... ";
 		Value* entry;
 		while(fin){ //NUMOFUSERS
 
@@ -118,16 +118,16 @@ int SPOs::load(const char* file, int count){
 			hashTable.insert(pair<int, Value*>(id, entry));
 
 			times++;
-			
+
 		}
 		fin.clear();
 		fin.close();
-		cout<<" Loaded yet: "<< times<<"\n";
+		// cout<<" Loaded yet: "<< times<<"\n";
 		fileNumber++;
 	}
-    cout << times << endl;
-    cout << "Done!" << endl;
-    cout << "totalFriends = " << (totalFriends/(1024)) << "KB" << endl;
+    // cout << times << endl;
+    // cout << "Done!" << endl;
+    // cout << "totalFriends = " << (totalFriends/(1024)) << "KB" << endl;
     return 0;
 }
 
@@ -297,7 +297,7 @@ bool SPOs::areFriends(int user1, int user2){
 //}
 void SPOs::printTriangles( int id, vector<int> friendList){
 	int num = 0;
-	
+
 	cout << "PRINTING TRIANGLES of user "<<id<<endl;
 	for (unsigned int i = 0; i< friendList.size();i++){
 		for (unsigned int j = i; j< friendList.size();j++){
@@ -306,7 +306,7 @@ void SPOs::printTriangles( int id, vector<int> friendList){
 				num ++;
 			}
 		}
-	}	
+	}
 	cout<<" | Total triangles = "<<num<<endl;
 }
 
@@ -321,6 +321,6 @@ int SPOs::getUserDegree(int id){
         degree = v->getListSize();
 		}
     }
-	
+
 	return degree;
 }

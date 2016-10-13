@@ -1,5 +1,5 @@
 PROG = NNTopkUsers
-CC = g++ -std=c++0x
+CC = g++-4.8 -std=c++0x
 CPPFLAGS = -g -c -Wall
 LDFLAGS =
 OBJS = NNTopkUsers.o Group.o Utilities.o GPOs.o GPOs_D.o Cell.o Point.o Grid.o IncrVisitor.o SPOs.o SPOs_D.o Visitor.o Value.o Graph.o Graph_D.o User.o Pair.o BasicGSQueries.o
