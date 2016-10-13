@@ -12,9 +12,9 @@ def index():
   lat      = float(request.args.get('lat'))
   lon      = float(request.args.get('lon'))
   K        = int(request.args.get('K'))
-  data_set = str(request.args.get('data_set'))
-  query = GSR(data_set).query((lat,lon), r, K)
-  return json.dumps(query)
+  # data_set = str(request.args.get('data_set'))
+  query = GSR().query((lat,lon), r, K)
+  return json.dumps({ "state": "success", "response": query })
 
 if __name__ == '__main__':
     app.run(debug=True)

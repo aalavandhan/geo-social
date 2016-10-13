@@ -1,0 +1,78 @@
+<div>
+  <div class="row">
+    <div class="col-md-12">
+      <h2>[GET] Geo Social Ranking - /api/gsr</h2>
+
+      <p>
+        This endpoint returns the top k ranked users users around a given query location q.
+      </p>
+
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Parameter</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <td>lat</td>
+            <td>required</td>
+            <td>Float [latitude] point of query location.</td>
+          </tr>
+
+          <tr>
+            <td>lon</td>
+            <td>required</td>
+            <td>Float [longitude] point of query location.</td>
+          </tr>
+
+          <tr>
+            <td>K</td>
+            <td>optional</td>
+            <td>Integer [Top K-Ranks]. Defaults to 1.</td>
+          </tr>
+
+          <tr>
+            <td>radius</td>
+            <td>optional</td>
+            <td>Float [Number of kms]. Defaults to 4 kms.</td>
+          </tr>
+
+          <tr>
+            <td>data_set</td>
+            <td>optional</td>
+            <td>String [Dataset Name]. Defaults to 'data_GSR_Austin'.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Sample API response</h3>
+<pre>[
+  {
+    rank: 1,
+    score: 0.35,
+    userId: 2,
+    distance: 0.25,
+    friends: [
+      2227, // USER-ID
+      2.87824154026702 // DISTANCE
+    ],[
+      2042,
+      2.11627756944029
+    ],[
+      354,
+      1.88029914754779
+    ],[
+      1850,
+      0.630553082673396
+    ],
+    nFriends: 3
+  }
+]
+</pre>
+    </div>
+  </div>
+</div>

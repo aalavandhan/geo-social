@@ -1,0 +1,394 @@
+angular.module('polar').run(['$templateCache', function($templateCache) {
+  'use strict';
+
+  $templateCache.put('app/scripts/components/flash/template.html',
+    "<div>\n" +
+    "  <div class=\"c-alert c-{{flashConfig.type || 'info'}}\" data-ng-if=\"(flashConfig && !closeFlash)\">\n" +
+    "    <span class=\"glyphicon c-{{flashConfig.type || 'info'}}-icon\"></span>\n" +
+    "    <span class=\"body\" data-ng-bind=\"flashConfig.message\"></span>\n" +
+    "    <button type=\"button\" class=\"close\" data-ng-click=\"close()\" aria-hidden=\"true\">&times;</button>\n" +
+    "  </div>\n" +
+    "</div>\n"
+  );
+
+
+  $templateCache.put('app/scripts/components/footer/template.html',
+    "<div class=\"footer\">\n" +
+    "  <span class=\"pull-right\">\n" +
+    "    A CSCI-587 Project\n" +
+    "  </span>\n" +
+    "</div>\n"
+  );
+
+
+  $templateCache.put('app/scripts/components/gsr/social_modal_template.html',
+    "<div>\n" +
+    "  <div class=\"modal-body\">\n" +
+    "    <div polar-social-network network=\"data.network\"></div>\n" +
+    "  </div>\n" +
+    "</div>\n"
+  );
+
+
+  $templateCache.put('app/scripts/components/gsr/template.html',
+    "<div>\n" +
+    "  <div class=\"row\">\n" +
+    "    <div class=\"col-md-12\">\n" +
+    "\n" +
+    "      <leaflet\n" +
+    "        width=\"100%\"\n" +
+    "        height=\"680px\"\n" +
+    "        maxbounds=\"maxbounds\"\n" +
+    "        defaults=\"defaults\"\n" +
+    "        markers=\"markers\"\n" +
+    "        center=\"center\"></leaflet>\n" +
+    "\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "\n" +
+    "  <div class=\"row\">\n" +
+    "    <div class=\"col-md-4\">\n" +
+    "      <div class=\"form-group\">\n" +
+    "        <label>Search Radius</label>\n" +
+    "        <rzslider rz-slider-model=\"radius\" rz-slider-options=\"{ 'floor': 1, 'ceil': 10, 'step': 0.25 }\"></rzslider>\n" +
+    "      </div>\n" +
+    "    </div>\n" +
+    "\n" +
+    "\n" +
+    "    <div class=\"col-md-4\">\n" +
+    "      <div class=\"form-group\">\n" +
+    "        <label>Top-K</label>\n" +
+    "        <rzslider rz-slider-model=\"K\" rz-slider-options=\"{ 'floor': 1, 'ceil': 10 }\" data-ng-disabled=\"true\"></rzslider>\n" +
+    "      </div>\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div class=\"col-md-2 col-md-offset-2\">\n" +
+    "      <div class=\"form-group\">\n" +
+    "        <label>&nbsp;</label>\n" +
+    "        <button class=\"btn btn-success btn-block\"\n" +
+    "                data-ng-click=\"query()\"\n" +
+    "                data-ng-disabled=\"state.isWorking\">Query</button>\n" +
+    "      </div>\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "\n" +
+    "\n" +
+    "  <div class=\"row\" data-ng-if=\"results.length > 0\">\n" +
+    "    <div class=\"col-md-6\">\n" +
+    "      <h3>Top K-Users</h3>\n" +
+    "      <table class=\"table\">\n" +
+    "        <thead>\n" +
+    "          <tr>\n" +
+    "            <th>Rank</th>\n" +
+    "            <th>User</th>\n" +
+    "            <th>Nearby Friends</th>\n" +
+    "          </tr>\n" +
+    "        </thead>\n" +
+    "        <tbody>\n" +
+    "          <tr data-ng-repeat=\"r in results\">\n" +
+    "            <td data-ng-bind=\"r.rank\"></td>\n" +
+    "            <td data-ng-bind=\"r.userId\"></td>\n" +
+    "            <td><a data-ng-bind=\"r.nFriends\" data-ng-click=\"viewNetwork(r)\"></a></td>\n" +
+    "          </tr>\n" +
+    "        </tbody>\n" +
+    "      </table>\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "</div>\n"
+  );
+
+
+  $templateCache.put('app/scripts/components/navigation/template.html',
+    "<nav class=\"navbar navbar-default\">\n" +
+    "  <div class=\"container\">\n" +
+    "    <div class=\"navbar-header\">\n" +
+    "      <button type=\"button\" class=\"navbar-toggle collapsed\" data-toggle=\"collapse\" data-target=\"#navbarLinks\">\n" +
+    "        <span class=\"sr-only\">Toggle navigation</span>\n" +
+    "        <span class=\"icon-bar\"></span>\n" +
+    "        <span class=\"icon-bar\"></span>\n" +
+    "        <span class=\"icon-bar\"></span>\n" +
+    "      </button>\n" +
+    "      <a class=\"navbar-brand\" href=\"#/\">Geo Social Query Interface</a>\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div class=\"collapse navbar-collapse navbar-collapse\" id=\"navbarLinks\">\n" +
+    "      <ul class=\"nav navbar-nav navbar-right\">\n" +
+    "        <li data-ng-class=\"$location.path() == '/api_doc' ? 'active' : '' \"><a href=\"#/api_doc\">API Doc</a></li>\n" +
+    "        <li data-ng-class=\"$location.path() == '/gsr' ? 'active' : '' \"><a href=\"#/gsr\">Geo Social Ranking</a></li>\n" +
+    "      </ul>\n" +
+    "    </div>\n" +
+    "\n" +
+    "  </div>\n" +
+    "</nav>\n"
+  );
+
+
+  $templateCache.put('app/scripts/components/social_network/template.html',
+    "<div>\n" +
+    "  <div class=\"row\">\n" +
+    "    <div class=\"col-md-12\">\n" +
+    "      <div class=\"graph-container\"\n" +
+    "           tg-graph\n" +
+    "           graph=\"graph\"\n" +
+    "           on-load=\"onGraphLoad(graph)\"\n" +
+    "           edge-menu=\"edgeMenu\"\n" +
+    "           node-menu=\"nodeMenu\"\n" +
+    "           metadata=\"metadata\"\n" +
+    "           configration=\"configration\"\n" +
+    "           behavior=\"behavior\"\n" +
+    "           stream=\"stream\"\n" +
+    "           helpers=\"helpers\"></div>\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "</div>\n"
+  );
+
+
+  $templateCache.put('app/scripts/components/graph/aside/template.html',
+    "<div class=\"aside\" data-ng-class=\"show ? 'show' : ''\" style=\"z-index: 10000;\">\n" +
+    "  <div class=\"aside-header\">\n" +
+    "    <button class=\"close\" ng-click=\"close()\" type=\"button\">×</button>\n" +
+    "    <h5 class=\"aside-title\" data-ng-bind=\"element.id\"></h5>\n" +
+    "  </div>\n" +
+    "\n" +
+    "  <div class=\"row\">\n" +
+    "    <ul class=\"nav nav-pills nav-justified nav-pills-aside\">\n" +
+    "      <li class=\"active\"><a href=\"#\"><i class=\"fa fa-bars\"></i></a></li>\n" +
+    "    </ul>\n" +
+    "  </div>\n" +
+    "\n" +
+    "  <div class=\"row\">\n" +
+    "    <h5 class=\"text-center title-tab\">\n" +
+    "      Properties\n" +
+    "    </h5>\n" +
+    "  </div>\n" +
+    "\n" +
+    "  <div class=\"row aside-form\">\n" +
+    "    <div class=\"col-md-12\">\n" +
+    "      <form class=\"form-horizontal\">\n" +
+    "\n" +
+    "        <div class=\"form-group element-fields\"\n" +
+    "             data-ng-show=\"element.isVertex || element.isEdge\"\n" +
+    "             data-ng-repeat=\"(key, value) in element.toJSON()\">\n" +
+    "          <label class=\"col-md-6 control-label\" data-ng-bind=\"key\"></label>\n" +
+    "          <div class=\"col-md-6\">\n" +
+    "            <p class=\"form-control-static\" data-ng-bind=\"value\"></p>\n" +
+    "          </div>\n" +
+    "        </div>\n" +
+    "\n" +
+    "      </form>\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "</div>\n"
+  );
+
+
+  $templateCache.put('app/scripts/sections/home/api_doc.html',
+    "<div>\n" +
+    "  <div class=\"row\">\n" +
+    "    <div class=\"col-md-12\">\n" +
+    "      <h2>[GET] Geo Social Ranking - /api/gsr</h2>\n" +
+    "\n" +
+    "      <p>\n" +
+    "        This endpoint returns the top k ranked users users around a given query location q.\n" +
+    "      </p>\n" +
+    "\n" +
+    "      <table class=\"table table-striped\">\n" +
+    "        <thead>\n" +
+    "          <tr>\n" +
+    "            <th>Parameter</th>\n" +
+    "            <th>Type</th>\n" +
+    "            <th>Description</th>\n" +
+    "          </tr>\n" +
+    "        </thead>\n" +
+    "\n" +
+    "        <tbody>\n" +
+    "          <tr>\n" +
+    "            <td>lat</td>\n" +
+    "            <td>required</td>\n" +
+    "            <td>Float [latitude] point of query location.</td>\n" +
+    "          </tr>\n" +
+    "\n" +
+    "          <tr>\n" +
+    "            <td>lon</td>\n" +
+    "            <td>required</td>\n" +
+    "            <td>Float [longitude] point of query location.</td>\n" +
+    "          </tr>\n" +
+    "\n" +
+    "          <tr>\n" +
+    "            <td>K</td>\n" +
+    "            <td>optional</td>\n" +
+    "            <td>Integer [Top K-Ranks]. Defaults to 1.</td>\n" +
+    "          </tr>\n" +
+    "\n" +
+    "          <tr>\n" +
+    "            <td>radius</td>\n" +
+    "            <td>optional</td>\n" +
+    "            <td>Float [Number of kms]. Defaults to 4 kms.</td>\n" +
+    "          </tr>\n" +
+    "\n" +
+    "          <tr>\n" +
+    "            <td>data_set</td>\n" +
+    "            <td>optional</td>\n" +
+    "            <td>String [Dataset Name]. Defaults to 'data_GSR_Austin'.</td>\n" +
+    "          </tr>\n" +
+    "        </tbody>\n" +
+    "      </table>\n" +
+    "\n" +
+    "      <h3>Sample API response</h3>\n" +
+    "<pre>[\n" +
+    "  {\n" +
+    "    rank: 1,\n" +
+    "    score: 0.35,\n" +
+    "    userId: 2,\n" +
+    "    distance: 0.25,\n" +
+    "    friends: [\n" +
+    "      2227, // USER-ID\n" +
+    "      2.87824154026702 // DISTANCE\n" +
+    "    ],[\n" +
+    "      2042,\n" +
+    "      2.11627756944029\n" +
+    "    ],[\n" +
+    "      354,\n" +
+    "      1.88029914754779\n" +
+    "    ],[\n" +
+    "      1850,\n" +
+    "      0.630553082673396\n" +
+    "    ],\n" +
+    "    nFriends: 3\n" +
+    "  }\n" +
+    "]\n" +
+    "</pre>\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "</div>\n"
+  );
+
+
+  $templateCache.put('app/scripts/sections/home/concept_editor.html',
+    "<div class=\"row\">\n" +
+    "  <div class=\"col-md-12\">\n" +
+    "    <div polar-concept-editor></div>\n" +
+    "  </div>\n" +
+    "</div>\n"
+  );
+
+
+  $templateCache.put('app/scripts/sections/home/index.html',
+    "<div>\n" +
+    "\n" +
+    "  <div class=\"row\">\n" +
+    "    <div class=\"col-md-12\">\n" +
+    "      <h2 class=\"text-center\">Geo Social Query Interface</h2>\n" +
+    "\n" +
+    "      <center>\n" +
+    "        <img class=\"img-thumbnail img-responsive\" src=\"images/image03.png\" width=\"40%\" />\n" +
+    "      </center>\n" +
+    "\n" +
+    "      <h4>Motivation</h4>\n" +
+    "\n" +
+    "      <p>Increasingly the past few years through GPS-enabled mobile devices, users publish their current geographical location to their friends, by “checking-in” at various places. Social networks, such as Facebook and Twitter, have been augmented with check-in functionality. This trend in geosocial networking has created opportunities for novel location-based social interactions and advertising. Given such a geosocial dataset we wish to build a browser based application which provides a map based query interface wherein advertisers/super-users can design geospatial queries and visualize the returned results.</p>\n" +
+    "\n" +
+    "      <hr />\n" +
+    "\n" +
+    "      <h4><a href=\"#/gsr\">Geo Social Ranking</a></h4>\n" +
+    "\n" +
+    "      <p>Given a query location q and k, rank the users of a Geo-Social Network based on their distance to q, the number of their friends in the vicinity of q, and the connectivity of those friends and returns the top-k users. The focus is exploring the variations in ranking functions to achieve various results suited for particular applications.</p>\n" +
+    "\n" +
+    "      <center>\n" +
+    "        <img class=\"img-thumbnail img-responsive\" src=\"images/image00.png\" width=\"50%\" />\n" +
+    "      </center>\n" +
+    "\n" +
+    "      <hr />\n" +
+    "\n" +
+    "      <h4>Nearest Friend Group</h4>\n" +
+    "      Given a query location point q and integers k,m, find the k nearest groups of m users to q, such that the users in every group are connected through a common friend (star).\n" +
+    "\n" +
+    "      <blockquote>\n" +
+    "        “the next group of five people who come to the restaurant will receive 20% discount”\n" +
+    "      </blockquote>\n" +
+    "\n" +
+    "      <hr />\n" +
+    "\n" +
+    "      <h4>Geo-Social Keyword Search</h4>\n" +
+    "\n" +
+    "      <p>Top-k Nearest, Popular and Relevant users query that, given a query location q and a set of terms Tq, outputs the top-k users based on their proximity to q, their social connectivity, and the similarity of their profiles to Tq. Top-k Nearest Socially and Textually Relevant POIs query , which, given a user v and a set of terms Tq, returns the top-k POIs based on their proximity to v, the number of check-ins by friends of v, and their similarity to Tq. Top-k Frequent Social Keywords in Range query that discovers the top-k keywords based on their frequency in pairs of friends located within a geographic area.</p>\n" +
+    "      <p>Each query covers a wide range of real-world tasks, including advertising, context-based search, and market analysis. Some expected visualizations and output of the queries are highlighted below.</p>\n" +
+    "\n" +
+    "      <center>\n" +
+    "        <img class=\"img-thumbnail img-responsive\" src=\"images/image01.png\" width=\"40%\" />\n" +
+    "        <img class=\"img-thumbnail img-responsive\" src=\"images/image02.png\" width=\"40%\" />\n" +
+    "        <img class=\"img-thumbnail img-responsive\" src=\"images/image04.png\" width=\"40%\" />\n" +
+    "      </center>\n" +
+    "\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "</div>\n"
+  );
+
+
+  $templateCache.put('app/scripts/sections/query/gsr.html',
+    "<div>\n" +
+    "  <div polar-gsr></div>\n" +
+    "</div>\n"
+  );
+
+
+  $templateCache.put('app/scripts/util/templates/alert.html',
+    "<div>\n" +
+    "  <div class=\"modal-body\" data-ng-if=\"data.head\">\n" +
+    "    {{ data.head }}\n" +
+    "  </div>\n" +
+    "\n" +
+    "  <div class=\"modal-body\">\n" +
+    "    {{ data.message }}\n" +
+    "  </div>\n" +
+    "\n" +
+    "  <div class=\"modal-footer\">\n" +
+    "    <button class=\"btn btn-info\" type=\"button\" ng-click=\"ok()\">Ok</button>\n" +
+    "  </div>\n" +
+    "</div>\n"
+  );
+
+
+  $templateCache.put('app/scripts/util/templates/dialog.html',
+    "<div>\n" +
+    "  <div class=\"modal-body\" data-ng-if=\"data.head\">\n" +
+    "    {{ data.head }}\n" +
+    "  </div>\n" +
+    "\n" +
+    "  <div class=\"modal-body\">\n" +
+    "    {{ data.message }}\n" +
+    "  </div>\n" +
+    "\n" +
+    "  <div class=\"modal-footer\">\n" +
+    "    <button class=\"btn btn-info\" type=\"button\" ng-click=\"ok()\">Ok</button>\n" +
+    "    <button class=\"btn btn-danger\" type=\"button\" ng-click=\"cancel()\">Cancel</button>\n" +
+    "  </div>\n" +
+    "</div>\n"
+  );
+
+
+  $templateCache.put('app/scripts/util/templates/global_loader.html',
+    "<div>\n" +
+    "  <div>\n" +
+    "    <div class=\"c-global-loader\" data-ng-if=\"loaderConfig\">\n" +
+    "      <span data-ng-bind=\"loaderConfig.message\"></span>\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div class=\"c-global-loader-center\" data-ng-if=\"loaderConfig && heavyLoading\">\n" +
+    "      <center>\n" +
+    "        <img src=\"images/loading.gif\" style=\"height: 120px;margin-right: 20px;\" />\n" +
+    "        <br />\n" +
+    "        Generating Insights\n" +
+    "      </center>\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "</div>\n"
+  );
+
+}]);

@@ -1,0 +1,21 @@
+<nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbarLinks">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#/">Geo Social Query Interface</a>
+    </div>
+
+    <div class="collapse navbar-collapse navbar-collapse" id="navbarLinks">
+      <ul class="nav navbar-nav navbar-right">
+        <li data-ng-class="$location.path() == '/api_doc' ? 'active' : '' "><a href="#/api_doc">API Doc</a></li>
+        <li data-ng-class="$location.path() == '/gsr' ? 'active' : '' "><a href="#/gsr">Geo Social Ranking</a></li>
+      </ul>
+    </div>
+
+  </div>
+</nav>
