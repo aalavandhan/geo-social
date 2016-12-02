@@ -4,4 +4,5 @@ angular.module("polar.components", [
   "polar.components.footer",
   "polar.components.gsr",
   "polar.components.socialNetwork",
+  "polar.components.socialMap",
 ]);

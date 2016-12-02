@@ -1,3 +1,6 @@
+#include <unordered_set>
+#include <unordered_map>
+
 class Utilities{
 
 public:
@@ -22,6 +25,15 @@ public:
     res_point* copy(res_point* toBeCopied);
     res_point* createResultPoint(int id, double x, double y, double distance);
     int getRandomInteger(int min, int max);
+	string int_to_string(int);
 
     void addToSortedList(int *list, int listSize, int newElement);
+	double getTextDistanceBetween(unordered_set<string>* user_profile_1, unordered_set<string>* user_profile_2);
+	double getTextDistanceBetween( unordered_map<string, double>* user_profile_1, unordered_set<string>* user_profile_2 );
+	double getSocialDistanceBetween(unordered_set<int>* _f1, unordered_set<int>* _f2);
+	double getDistanceBetween(int arr1[], int arr2[], int m, int n, string f);
+	int countIntersection(int arr1[], int arr2[], int m, int n);
+	int countUnion(int arr1[], int arr2[], int m, int n);
+	double computeJaccard(int arr1[], int arr2[], int m, int n);
+	double computeSetIntersection( unordered_set<int>* _f1, unordered_set<int>* _f2 );
 };

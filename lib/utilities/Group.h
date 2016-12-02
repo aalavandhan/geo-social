@@ -11,27 +11,28 @@ public:
     Utilities util;
     unsigned int m;
     double max_dist;
-    char* f;
     double score;
+	
+	double userX;
+	double userY;
+	
     // Approach 1. You keep a vector of res_points, use mergesort O(nlogn), and you can copy it easily;
     // Total cost: create: O(nlogn), copy: O(n) => sum = O(nlogn)
     // Approach 2. you keep a priority_queue. the cost of insertion is O(logn), when you need to copy it, you
     // must copy it to two priority queus and then to reinsert it back (supports only push and pop).
     // Total cost: create: O(nlogn), copy: O(3nlogn)=> sum = O(nlogn). So, it is the same.
 
-    priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>* friends;
-    priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>* tmp;
-	 priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>* tmpAnother;
+    priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>* friends = NULL;
+	
 
 public:
     Group();
     Group(Group* g);
     Group(res_point* user, int cardinality, char* function);
     Group(res_point* user);
+	Group(Point* user);
     ~Group();
 
-    double getBestDist();
-	double getMaxDist();
     double getAdist();
     void removeDuplicates();
 	vector<int> giveFriends();
@@ -40,6 +41,7 @@ public:
     int size();
     void print();
 
+	int getId();
 
     bool finished();
     void updateLongestDist(double distance);
@@ -50,9 +52,6 @@ public:
     struct ascending : public std::binary_function<Group*, Group*, bool>
     {
         bool operator()(const Group* __x, const Group* __y) const {
-            if(strcmp(__x->f, "max") == 0)
-                return __x->max_dist > __y->max_dist;
-            else
                 return __x->adist > __y->adist;
         }
     };
@@ -60,9 +59,6 @@ public:
     struct descending : public std::binary_function<Group*, Group*, bool>
     {
         bool operator()(const Group* __x, const Group* __y) const {
-            if(strcmp(__x->f, "max") == 0)
-                return __x->max_dist < __y->max_dist;
-            else
                 return __x->adist < __y->adist;
         }
 

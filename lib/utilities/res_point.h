@@ -3,9 +3,6 @@ struct res_point{
     double x;
     double y;
     double dist;
-
-
-
 };
 
 struct res_point_equal : public binary_function<res_point*, res_point*, bool>

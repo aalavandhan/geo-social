@@ -1,0 +1,24 @@
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# arguments  = 9
+Query is NSG_LAZY
+Loading the Social Graph from dataLV/socialGraph.txt
+fin is not good: id = 40297
+Users loaded from Social Graph40298
+totalFriends = 1521KB
+MIN_X = -115.339468 MAX_X = -114.927464 DELTA_X = 0.0016157019607843
+MIN_Y = 35.996499 MAX_Y = 36.328529 DELTA_Y = 0.00130207843137256
+HashTable: [ User_id -> location ] Loading from dataLV/checkins.txt
+Done! Num of users: 40298
+Loading keywords in GPOs from file dataLV/keywords.txt
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# arguments  = 9
+Query is GSK_NPRU
+Loading the Social Graph from dataLV/socialGraph.txt
+fin is not good: id = 40297
+Users loaded from Social Graph40298
+totalFriends = 1521KB
+MIN_X = -115.339468 MAX_X = -114.927464 DELTA_X = 0.0016157019607843
+MIN_Y = 35.996499 MAX_Y = 36.328529 DELTA_Y = 0.00130207843137256
+HashTable: [ User_id -> location ] Loading from dataLV/checkins.txt
+Done! Num of users: 40298
+Loading keywords in GPOs from file dataLV/keywords.txt

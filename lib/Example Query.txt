@@ -1,0 +1,37 @@
+echo QUERY EXECUTIONS
+#"Usage: " << argv[0] << " query_file query_type k w Bpower EXTRA_FLOATING_POINT_VAR radius m" << endl;
+
+echo NSTP
+./NNTopkUsers dataLV/LVqueries/queryVisNSTP.txt GSK_NSTP 5 0.5 0 0 0 0 >> output.txt
+
+echo NPRU
+./NNTopkUsers dataLV/LVqueries/queryVisNPRU.txt GSK_NPRU 5 0.5 0 0 0 0 >> output.txt
+
+echo FSKR
+./NNTopkUsers dataLV/LVqueries/queryVisNPRU.txt GSK_FSKR 5 0.5 0 0 3 0 >> output.txt
+
+echo FSKR
+./NNTopkUsers dataLV/LVqueries/queryVisNPRU.txt NSG_LAZY 3 0.5 0 0 0 5 >> output.txt
+
+echo LCA_UD
+./NNTopkUsers dataLV/LVqueries/queryVisNPRU.txt LCA_UD 5 0.5 0 0 2 0 >> output.txt
+echo LCA_DD
+./NNTopkUsers dataLV/LVqueries/queryVisNPRU.txt LCA_DD 5 0.5 4 0 2 0 >> output.txt
+
+echo RC
+./NNTopkUsers dataLV/LVqueries/queryVisNPRU.txt RCA 5 0.5 0 0 0 0 >> output.txt
+
+echo HGS_UD
+# distance in HGS is generally extended 4 times during query execution, so 1 km translates to 4 km as query runs
+./NNTopkUsers dataLV/LVqueries/queryVisNPRU.txt HGS_UD 5 0.5 0 0 0.5 0 >> output.txt
+echo HGS_DD
+./NNTopkUsers dataLV/LVqueries/queryVisNPRU.txt HGS_DD 5 0.5 3 0 0 0 >> output.txt
+
+echo GST_EAGER
+./NNTopkUsers dataLV/LVqueries/queryVisNPRU.txt GST_EAGER 5 1 0 0 0 0 >> output.txt
+echo GST_LAZY
+./NNTopkUsers dataLV/LVqueries/queryVisNPRU.txt GST_LAZY 5 1 0 0 0 0 >> output.txt
+
+
+
+

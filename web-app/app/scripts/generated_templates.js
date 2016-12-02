@@ -21,10 +21,19 @@ angular.module('polar').run(['$templateCache', function($templateCache) {
   );
 
 
+  $templateCache.put('app/scripts/components/gsr/output_modal_template.html',
+    "<div>\n" +
+    "  <div class=\"modal-body\">\n" +
+    "    <pre data-ng-bind=\"data.output\"></pre>\n" +
+    "  </div>\n" +
+    "</div>\n"
+  );
+
+
   $templateCache.put('app/scripts/components/gsr/social_modal_template.html',
     "<div>\n" +
     "  <div class=\"modal-body\">\n" +
-    "    <div polar-social-network network=\"data.network\"></div>\n" +
+    "    <div polar-social-map data-user=\"data.user\" data-friends=\"data.friends\" data-origin=\"data.origin\"></div>\n" +
     "  </div>\n" +
     "</div>\n"
   );
@@ -47,22 +56,62 @@ angular.module('polar').run(['$templateCache', function($templateCache) {
     "  </div>\n" +
     "\n" +
     "  <div class=\"row\">\n" +
-    "    <div class=\"col-md-4\">\n" +
-    "      <div class=\"form-group\">\n" +
-    "        <label>Search Radius</label>\n" +
-    "        <rzslider rz-slider-model=\"radius\" rz-slider-options=\"{ 'floor': 1, 'ceil': 10, 'step': 0.25 }\"></rzslider>\n" +
+    "    <div class=\"col-md-10\">\n" +
+    "      <div class=\"row\">\n" +
+    "        <div class=\"col-md-4\">\n" +
+    "          <div class=\"form-group\">\n" +
+    "            <label>Query Type</label>\n" +
+    "            <select ng-model=\"qType\" ng-options=\"t for t in types\" class=\"form-control\"></select>\n" +
+    "          </div>\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <div class=\"col-md-4\" data-ng-if=\"qType == 'LCA_UD' || qType == 'HGS_UD' || qType == 'GSK_FSKR' \">\n" +
+    "          <div class=\"form-group\">\n" +
+    "            <label>Search Radius</label>\n" +
+    "            <rzslider rz-slider-model=\"params.radius\" rz-slider-options=\"{ 'floor': 1, 'ceil': 10.0, 'step': 0.1, 'precision': 1 }\"></rzslider>\n" +
+    "          </div>\n" +
+    "        </div>\n" +
+    "\n" +
+    "\n" +
+    "        <div class=\"col-md-4\"  data-ng-if=\"qType == 'LCA_UD' || qType == 'LCA_DD' || qType == 'HGS_UD' || qType == 'HGS_DD' || qType == 'NSG_LAZY' || qType == 'GST_LAZY' || qType == 'GST_EAGER' || qType == 'GSK_NPRU' || qType == 'GSK_NSTP' || qType == 'GSK_FSKR'\n" +
+    "        || qType == 'RCA'\">\n" +
+    "          <div class=\"form-group\">\n" +
+    "            <label>Top-K</label>\n" +
+    "            <rzslider rz-slider-model=\"params.K\" rz-slider-options=\"{ 'floor': 1, 'ceil': 100 } \"></rzslider>\n" +
+    "          </div>\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <div class=\"col-md-4\" data-ng-if=\"qType == 'RCA' || qType == 'LCA_UD' || qType == 'LCA_DD'\">\n" +
+    "          <div class=\"form-group\">\n" +
+    "            <label>W</label>\n" +
+    "            <rzslider rz-slider-model=\"params.W\" rz-slider-options=\"{ 'floor': 0, 'ceil': 1.0, 'step': 0.01, 'precision': 1 } \"></rzslider>\n" +
+    "          </div>\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <div class=\"col-md-4\" data-ng-if=\"qType == 'NSG_LAZY'\">\n" +
+    "          <div class=\"form-group\">\n" +
+    "            <label>M</label>\n" +
+    "            <rzslider rz-slider-model=\"params.M\" rz-slider-options=\"{ 'floor': 0, 'ceil': 10 } \"></rzslider>\n" +
+    "          </div>\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <div class=\"col-md-4\" data-ng-if=\"qType == 'LCA_DD' || qType == 'HGS_DD'\">\n" +
+    "          <div class=\"form-group\">\n" +
+    "            <label>y = k<sup>x</sup></label>\n" +
+    "            <rzslider rz-slider-model=\"params.BPower\" rz-slider-options=\"{ 'floor': 0, 'ceil': 10.0, 'step': 0.1, 'precision': 1 } \"></rzslider>\n" +
+    "          </div>\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <div class=\"col-md-4\"  data-ng-if=\"qType == 'GSK_NSTP' || qType == 'GSK_NPRU'\">\n" +
+    "          <div class=\"form-group\">\n" +
+    "            <label>Key Words</label>\n" +
+    "            <tags-input ng-model=\"params.keywords\"></tags-input>\n" +
+    "          </div>\n" +
+    "        </div>\n" +
     "      </div>\n" +
     "    </div>\n" +
     "\n" +
-    "\n" +
-    "    <div class=\"col-md-4\">\n" +
-    "      <div class=\"form-group\">\n" +
-    "        <label>Top-K</label>\n" +
-    "        <rzslider rz-slider-model=\"K\" rz-slider-options=\"{ 'floor': 1, 'ceil': 10 }\" data-ng-disabled=\"true\"></rzslider>\n" +
-    "      </div>\n" +
-    "    </div>\n" +
-    "\n" +
-    "    <div class=\"col-md-2 col-md-offset-2\">\n" +
+    "    <div class=\"col-md-2\">\n" +
     "      <div class=\"form-group\">\n" +
     "        <label>&nbsp;</label>\n" +
     "        <button class=\"btn btn-success btn-block\"\n" +
@@ -73,25 +122,62 @@ angular.module('polar').run(['$templateCache', function($templateCache) {
     "  </div>\n" +
     "\n" +
     "\n" +
-    "  <div class=\"row\" data-ng-if=\"results.length > 0\">\n" +
-    "    <div class=\"col-md-6\">\n" +
-    "      <h3>Top K-Users</h3>\n" +
+    "  <div class=\"row\" data-ng-show=\"users.length > 0\">\n" +
+    "    <div class=\"col-md-8\">\n" +
+    "      <h3>Top User Group</h3>\n" +
     "      <table class=\"table\">\n" +
     "        <thead>\n" +
     "          <tr>\n" +
-    "            <th>Rank</th>\n" +
     "            <th>User</th>\n" +
-    "            <th>Nearby Friends</th>\n" +
+    "            <th>Distance (KM)</th>\n" +
+    "            <th>Score</th>\n" +
+    "            <th>Cluster</th>\n" +
+    "            <th data-ng-if=\"qType != 'GSK_NPRU'\">Nearby Friends</th>\n" +
     "          </tr>\n" +
     "        </thead>\n" +
     "        <tbody>\n" +
-    "          <tr data-ng-repeat=\"r in results\">\n" +
-    "            <td data-ng-bind=\"r.rank\"></td>\n" +
-    "            <td data-ng-bind=\"r.userId\"></td>\n" +
-    "            <td><a data-ng-bind=\"r.nFriends\" data-ng-click=\"viewNetwork(r)\"></a></td>\n" +
+    "          <tr data-ng-repeat=\"r in users\">\n" +
+    "            <td data-ng-bind=\"r.id\"></td>\n" +
+    "            <td data-ng-bind=\"r.uDist\"></td>\n" +
+    "            <td data-ng-bind=\"r.score\"></td>\n" +
+    "            <td data-ng-bind=\"clusters[r.id]\"></td>\n" +
+    "            <td data-ng-if=\"qType != 'GSK_NPRU'\"><a data-ng-bind=\"r.nFriends\" data-ng-click=\"viewNetwork(r)\"></a></td>\n" +
     "          </tr>\n" +
     "        </tbody>\n" +
     "      </table>\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "\n" +
+    "  <div class=\"row\" data-ng-show=\"places.length > 0\">\n" +
+    "    <div class=\"col-md-8\">\n" +
+    "      <h3>Top Points of interest</h3>\n" +
+    "      <table class=\"table\">\n" +
+    "        <thead>\n" +
+    "          <tr>\n" +
+    "            <th>Place</th>\n" +
+    "            <th>Distance (KM)</th>\n" +
+    "            <th>TF-IDF</th>\n" +
+    "            <th>VNP</th>\n" +
+    "            <th>Dist Score</th>\n" +
+    "          </tr>\n" +
+    "        </thead>\n" +
+    "        <tbody>\n" +
+    "          <tr data-ng-repeat=\"r in places\">\n" +
+    "            <td data-ng-bind=\"r.id\"></td>\n" +
+    "            <td data-ng-bind=\"r.dist\"></td>\n" +
+    "            <td data-ng-bind=\"r.tfidf\"></td>\n" +
+    "            <td data-ng-bind=\"r.vnp\"></td>\n" +
+    "            <td data-ng-bind=\"r.distScore\"></td>\n" +
+    "          </tr>\n" +
+    "        </tbody>\n" +
+    "      </table>\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "\n" +
+    "\n" +
+    "  <div class=\"row\" data-ng-show=\"keywords.length > 0\">\n" +
+    "    <div class=\"col-md-12\">\n" +
+    "      <div id=\"tag-cloud\"></div>\n" +
     "    </div>\n" +
     "  </div>\n" +
     "</div>\n"
@@ -112,14 +198,41 @@ angular.module('polar').run(['$templateCache', function($templateCache) {
     "    </div>\n" +
     "\n" +
     "    <div class=\"collapse navbar-collapse navbar-collapse\" id=\"navbarLinks\">\n" +
+    "      <ul class=\"nav navbar-nav\">\n" +
+    "        <li>\n" +
+    "          <div style=\"padding-top: 5px;\">\n" +
+    "            <select class=\"form-control\"><option>4-Square Las Vegas</option></select>\n" +
+    "          </div>\n" +
+    "        </li>\n" +
+    "      </ul>\n" +
+    "\n" +
     "      <ul class=\"nav navbar-nav navbar-right\">\n" +
-    "        <li data-ng-class=\"$location.path() == '/api_doc' ? 'active' : '' \"><a href=\"#/api_doc\">API Doc</a></li>\n" +
-    "        <li data-ng-class=\"$location.path() == '/gsr' ? 'active' : '' \"><a href=\"#/gsr\">Geo Social Ranking</a></li>\n" +
+    "        <li data-ng-class=\"$location.path() == '/gsr' ? 'active' : '' \"><a href=\"#/gsr\">User Groups</a></li>\n" +
+    "        <li data-ng-class=\"$location.path() == '/gsp' ? 'active' : '' \"><a href=\"#/gsp\">Points of Interest</a></li>\n" +
+    "        <li data-ng-class=\"$location.path() == '/gsk' ? 'active' : '' \"><a href=\"#/gsk\">Keywords</a></li>\n" +
     "      </ul>\n" +
     "    </div>\n" +
     "\n" +
     "  </div>\n" +
     "</nav>\n"
+  );
+
+
+  $templateCache.put('app/scripts/components/social_map/template.html',
+    "<div>\n" +
+    "  <div class=\"row\">\n" +
+    "    <div class=\"col-md-12\">\n" +
+    "      <leaflet\n" +
+    "        id=\"social-map\"\n" +
+    "        width=\"100%\"\n" +
+    "        height=\"680px\"\n" +
+    "        maxbounds=\"maxbounds\"\n" +
+    "        defaults=\"defaults\"\n" +
+    "        markers=\"markers\"\n" +
+    "        center=\"center\"></leaflet>\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "</div>\n"
   );
 
 
@@ -331,10 +444,33 @@ angular.module('polar').run(['$templateCache', function($templateCache) {
   );
 
 
+  $templateCache.put('app/scripts/sections/query/gsk.html',
+    "<div>\n" +
+    "  <div polar-gsr\n" +
+    "    data-types=\"['GSK_FSKR']\"\n" +
+    "    data-query-type=\"'gsk'\"></div>\n" +
+    "</div>\n" +
+    "\n"
+  );
+
+
+  $templateCache.put('app/scripts/sections/query/gsp.html',
+    "<div>\n" +
+    "  <div polar-gsr\n" +
+    "    data-types=\"['GSK_NSTP']\"\n" +
+    "    data-query-type=\"'gsp'\"></div>\n" +
+    "</div>\n" +
+    "\n"
+  );
+
+
   $templateCache.put('app/scripts/sections/query/gsr.html',
     "<div>\n" +
-    "  <div polar-gsr></div>\n" +
-    "</div>\n"
+    "  <div polar-gsr\n" +
+    "    data-types=\"['GSK_NPRU','NSG_LAZY','LCA_UD','LCA_DD','RCA','HGS_UD','HGS_DD','GST_EAGER','GST_LAZY']\"\n" +
+    "    data-query-type=\"'gsr'\"></div>\n" +
+    "</div>\n" +
+    "\n"
   );
 
 

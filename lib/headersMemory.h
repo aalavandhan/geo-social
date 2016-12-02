@@ -1,36 +1,134 @@
-
-#ifndef HEADERSMEMORY_H
-#define HEADERSMEMORY_H
-
 #include "headers.h"
 
 // REAL
 
 // Grid Set Up
-//scallability
-// #define DATASET_SIZE 2000000
-// #define X 500 // table[X][Y]
-// #define Y 500
 
-//250 km
-// #define MAX_X -72.79393586019292
-// #define MAX_Y 41.82401035104755
-// #define MIN_X -75.30216129645595
-// #define MIN_Y 39.579425624113
 
-//64km
-// #define MAX_X -73.67130332202277
-// #define MAX_Y 41.066482183460764
-// #define MIN_X -74.33533012375237
-// #define MIN_Y 40.40050397157456
+//YELP LAS VEGAS
+// #define DATASET_SIZE 40298
+// #define POI_SIZE 12773
+// #define MAX_X -114.927464
+// #define MAX_Y 36.328529
+// #define MIN_Y 35.996499
+// #define MIN_X -115.339468
 
-// 100km - official
-// #define MAX_X -73.11029266745638
-// #define MAX_Y 41.27306291471666
-// #define MIN_X -75.41071675619725
-// #define MIN_Y 39.36143608785296
 
-// AUSTIN
+
+//YELP PHOENIX
+// #define DATASET_SIZE 30057
+// #define POI_SIZE 16154
+// #define MAX_Y 33.859067
+// #define MIN_Y 33.219214
+// #define MAX_X -111.711288
+// #define MIN_X -112.495437
+
+#define ESTIM_ALPHA 0.331577570295903
+#define ESTIM_BETA 0.306589909581214
+
+
+extern double DATASET_SIZE;
+extern double POI_SIZE;
+
+extern double MIN_X;
+extern double MIN_Y;
+extern double MAX_X;
+extern double MAX_Y;
+extern double DELTA_X ;
+extern double DELTA_Y ;
+
+// GSKI PARAMETERS
+// extern int X;   
+// extern int Y;
+// extern int HG_HEIGHT;
+// extern int R_FAN;
+// extern int HG_FANOUT;
+
+
+
+// GSKI PARAMETERS for running example
+// #define X 4 // table[X][Y]   
+// #define Y 4
+// #define HG_HEIGHT 2
+// #define R_FAN 2
+// #define HG_FANOUT 4
+
+
+// GSKI PARAMETERS 
+// #define X 81 // table[X][Y]   
+// #define Y 81
+// #define HG_HEIGHT 4
+// #define R_FAN 3
+// #define HG_FANOUT 9
+
+// GSKI PARAMETERS 
+#define X 256 // table[X][Y]   
+#define Y 256
+#define HG_HEIGHT 4
+#define R_FAN 4
+#define HG_FANOUT 16
+
+
+// GSKI PARAMETERS 
+// #define X 625 // table[X][Y]   
+// #define Y 625
+// #define HG_HEIGHT 4
+// #define R_FAN 5
+// #define HG_FANOUT 25
+
+
+// GSKI PARAMETERS 
+// #define X 1296 // table[X][Y]   
+// #define Y 1296
+// #define HG_HEIGHT 4
+// #define R_FAN 6
+// #define HG_FANOUT 36
+
+
+//------------------------------------
+
+// GSKI PARAMETERS 
+// #define X 243 // table[X][Y]   
+// #define Y 243
+// #define HG_HEIGHT 5
+// #define R_FAN 3
+// #define HG_FANOUT 9
+
+// GSKI PARAMETERS 
+// #define X 1024 // table[X][Y]   
+// #define Y 1024
+// #define HG_HEIGHT 5
+// #define R_FAN 4
+// #define HG_FANOUT 16
+
+
+// GSKI PARAMETERS 
+// #define X 3125 // table[X][Y]   
+// #define Y 3125
+// #define HG_HEIGHT 5
+// #define R_FAN 5
+// #define HG_FANOUT 25
+
+
+
+
+
+#define CONV_PERCENTILE 100/DATASET_SIZE
+
+// for hierarchical grid
+// #define X 1536 // table[X][Y]
+// #define Y 1536a
+
+//YELP COMPLETE
+// #define DATASET_SIZE 58062
+// #define X 200 // table[X][Y]
+// #define Y 200
+// #define MAX_X -3.0562661
+// #define MAX_Y 55.9816255427668
+// #define MIN_X -115.369725427566
+// #define MIN_Y 32.8768662
+// #define VOCAB_SIZE 930
+//AUSTIN
 // #define DATASET_SIZE 5868
 // #define X 100 // table[X][Y]
 // #define Y 100
@@ -80,13 +178,13 @@
 //#define DATASET_SIZE 12652
 
 // dataset scalability
-extern double DATASET_SIZE;
-#define X 400 // table[X][Y]   
-#define Y 400
-extern double MIN_X;
-extern double MIN_Y;
-extern double MAX_X;
-extern double MAX_Y;
+//#define DATASET_SIZE 5000000
+//#define X 300 // table[X][Y]   
+//#define Y 300
+//#define MIN_X -37.8
+//#define MIN_Y -158.0
+//#define MAX_X 64.0
+//#define MAX_Y 175.0
 
 
 //#define DATASET_SIZE 10000
@@ -98,9 +196,14 @@ extern double MAX_Y;
 #define EARTH_RADIUS_IN_KILOMETERS 6371
 #define EARTH_CIRCUMFERENCE 40075.017
 
-extern double DELTA_X ;
-extern double DELTA_Y ;
+// #define DELTA_X ((MAX_X - MIN_X)/ (X-1))
+// #define DELTA_Y ((MAX_Y - MIN_Y)/ (Y-1))
 
+#define DELTA_XY (sqrt(DELTA_X*DELTA_X + DELTA_Y*DELTA_Y))
+
+//bloom filter param
+#define CAPACITY 2000
+#define ERROR_RATE 0.1
 
 /*
  // DENSE
@@ -140,27 +243,41 @@ extern double DELTA_Y ;
 #define RECTANGLE 1
 #define POINT 2
 
+// QuadTreeNode types used for heap
+#define QTN 1
+#define USER 2
+
 // CPM directions
 #define UP 0
 #define RIGHT 1
 #define DOWN 2
 #define LEFT 3
 
-#include "GPOs/MemoryGrid/grid/Point.h"
+#include "bloom/murmur.h"
+#include "bloom/dablooms.h"
+
+
+#include "SPOs/MemoryMap/SPOs.h"
+#include "GPOs/MemoryGrid/grid/QuadTreeNode.h"
 #include "GPOs/MemoryGrid/grid/Cell.h"
+
 #include "GPOs/MemoryGrid/grid/IncrVisitor.h"
 #include "GPOs/MemoryGrid/grid/Visitor.h"
 #include "GPOs/MemoryGrid/grid/Grid.h"
 
+
 //#include "SPOs/MemoryMap/pch.h"
 //#include "GPOs/MemoryGrid/headers.h"
 
-#include "GPOs/MemoryGrid/GPOs.h"
-#include "SPOs/MemoryMap/Value.h"
-#include "SPOs/MemoryMap/SPOs.h"
 
-//#include "SPOs/MemoryMapWeighted/Pair.h"
+#include "GPOs/MemoryGrid/GPOs.h"
+
+
+#include "GSKqueries/topkGSK.h"
+
+// #include "SPOs/MemoryMapWeighted/Pair.h"
 #include "SPOs/MemoryMapWeighted/User.h"
 #include "SPOs/MemoryMapWeighted/Graph.h"
 
-#endif
+
+

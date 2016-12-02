@@ -9,6 +9,221 @@ Utilities::Utilities(){
 Utilities::~Utilities(){}
 
 
+//for Diversity between topk results
+double Utilities::getDistanceBetween(int friendsO[], int friendsK[], int friendsSizeO, int friendsSizeK, string f){
+	
+	//if(f == "A"){
+		// Jaccard Similarity
+		return 1 - computeJaccard( friendsO, friendsK, friendsSizeO, friendsSizeK );
+	//}
+	/*
+	else if(f == "B"){
+		//Normalized by min
+		if(friendsSizeK != 0 && friendsSizeO != 0)
+			return countIntersection( friendsO, friendsK, friendsSizeO, friendsSizeK ) / (double) (friendsSizeO > friendsSizeK ? friendsSizeK : friendsSizeO) ;
+		else
+			return 0;
+	}
+	else if(f == "C"){
+		// Exponentially smoothed - need to experiment with accumulating exponential smoothing
+		return (exp(countIntersection( friendsO, friendsK, friendsSizeO, friendsSizeK ) / (double) (friendsSizeO > friendsSizeK ? friendsSizeK : friendsSizeO))) - 1 ;
+	}
+	*/
+}
+
+double Utilities::getSocialDistanceBetween( unordered_set<int>* _f1, unordered_set<int>* _f2 ){
+	int intersections = 0, union_size = 0;
+	if(_f1 != NULL && _f2 != NULL){
+		if(_f1->size() == 0 || _f2->size() == 0)
+			return 0;
+		if(_f1->size() > _f2->size() ) {
+			for(auto it = _f2->begin();it!=_f2->end();it++){
+				int id = *it;
+				if(_f1->find(id) != _f1->end()){
+					intersections++;
+				}
+			}
+		}
+		else{
+			for(auto it = _f1->begin();it!=_f1->end();it++){
+				int id = *it;
+				if(_f2->find(id) != _f2->end()){
+					intersections++;
+				}
+			}
+		}
+		union_size = _f2->size() + _f1->size() - intersections;
+		return (union_size - intersections) / (double) union_size;
+	}
+	return 0;
+}
+
+double Utilities::getTextDistanceBetween( unordered_set<string>* user_profile_1, unordered_set<string>* user_profile_2 ){
+	int intersections = 0, union_size = 0;
+	if(user_profile_1 != NULL && user_profile_2 != NULL){
+		if(user_profile_1->size() == 0 || user_profile_2->size() == 0)
+			return 0;
+		if(user_profile_1->size() > user_profile_2->size() ) {
+			for(auto it = user_profile_2->begin();it!=user_profile_2->end();it++){
+				string word = *it;
+				if(user_profile_1->find(word) != user_profile_1->end()){
+					intersections++;
+				}
+			}
+		}
+		else{
+			for(auto it = user_profile_1->begin(); it != user_profile_1->end() ;it++){
+				string word = *it;
+				if(user_profile_2->find(word) != user_profile_2->end()){
+					intersections++;
+				}
+			}
+		}
+		union_size = user_profile_2->size() + user_profile_1->size() - intersections;
+		return (union_size - intersections) / (double) union_size;
+	}
+	return 0;
+}
+
+
+
+double Utilities::computeSetIntersection( unordered_set<int>* _f1, unordered_set<int>* _f2 ){
+	int intersections = 0;
+	if(_f1 != NULL && _f2 != NULL){
+		if(_f1->size() == 0 || _f2->size() == 0)
+			return 0;
+		if(_f1->size() > _f2->size() ) {
+			for(auto it = _f2->begin();it!=_f2->end();it++){
+				int id = *it;
+				if(_f1->find(id) != _f1->end()){
+					intersections++;
+				}
+			}
+		}
+		else{
+			for(auto it = _f1->begin();it!=_f1->end();it++){
+				int id = *it;
+				if(_f2->find(id) != _f2->end()){
+					intersections++;
+				}
+			}
+		}
+		
+		return intersections;
+	}
+	return 0;
+}
+
+
+double Utilities::getTextDistanceBetween( unordered_map<string, double>* user_profile_1, unordered_set<string>* user_profile_2 ){
+	int intersections = 0, union_size = 0;
+	if(user_profile_1 != NULL && user_profile_2 != NULL){
+		if(user_profile_1->size() == 0 || user_profile_2->size() == 0)
+			return 0;
+		if(user_profile_1->size() > user_profile_2->size() ) {
+			for(auto it = user_profile_2->begin();it!=user_profile_2->end();it++){
+				string word = *it;
+				if(user_profile_1->find(word) != user_profile_1->end()){
+					intersections++;
+				}
+			}
+		}
+		else{
+			for(auto it = user_profile_1->begin(); it != user_profile_1->end() ;it++){
+				string word = it->first;
+				if(user_profile_2->find(word) != user_profile_2->end()){
+					intersections++;
+				}
+			}
+		}
+		union_size = user_profile_2->size() + user_profile_1->size() - intersections;
+		return (union_size - intersections) / (double) union_size;
+	}
+
+	return 0;
+}
+
+
+
+double Utilities::computeJaccard(int arr1[], int arr2[], int m, int n){
+	if(m==0 || n==0){
+		return 1;
+	}
+	
+	int intersections = countIntersection(arr1, arr2, m, n);
+	int union_size = m + n - intersections;
+	
+	// cout<<"Array 1: ";
+	// for(int i = 0; i < m; i++)cout<<" "<<arr1[i];
+	// cout<<" | Array 2: ";
+	// for(int i = 0; i < n; i++)cout<<" "<<arr2[i];
+	// cout<<" intersections: "<<intersections<<" union_size: "<<union_size<<endl;
+	
+	return  intersections/(double) union_size;
+}
+
+/* Function prints union of arr1[] and arr2[]
+   m is the number of elements in arr1[]
+   n is the number of elements in arr2[] */
+int Utilities::countUnion(int arr1[], int arr2[], int m, int n)
+{
+  int count = 0;
+  int i = 0, j = 0;
+  while (i < m && j < n)
+  {
+    if (arr1[i] < arr2[j]){
+	++count;
+     ++i;
+	 }
+    else if (arr2[j] < arr1[i]){
+      ++count;
+	  ++j;
+	  }
+    else
+    {
+      ++count;
+	  ++j;
+	  ++i;
+    }
+  }
+ 
+  /* Print remaining elements of the larger array */
+  while(i < m){
+  ++count;
+     ++i;
+	}
+  while(j < n){
+   ++count;
+	  ++j;
+  }
+  return count;
+}
+
+
+
+int Utilities::countIntersection(int arr1[], int arr2[], int m, int n)
+{
+	int count=0;
+
+  int i = 0, j = 0;
+  while (i < m && j < n)
+  {
+    if (arr1[i] < arr2[j])
+      i++;
+    else if (arr2[j] < arr1[i])
+      j++;
+    else /* if arr1[i] == arr2[j] */
+    {
+	++count;
+      ++j;
+      i++;
+    }
+  }
+  
+  return count;
+}
+
+
 //time in microseconds
 double Utilities::print_time(struct timeval &start, struct timeval &end){
     double usec;
@@ -192,9 +407,6 @@ res_point* Utilities::binarySearch_res_point(vector<res_point*>* sortedArray, in
 
 
 
-
-
-
 double Utilities::computeMinimumDistance(double x1, double y1, double x2, double y2){
     return sqrt(((x1-x2)*(x1-x2))+ ((y1 - y2)*(y1 - y2)));
 }
@@ -235,3 +447,12 @@ res_point* Utilities::createResultPoint(int id, double x, double y, double dista
     return rp;
 }
 
+
+
+
+
+string Utilities::int_to_string(int i) {
+	stringstream out;
+	out << i;
+	return out.str();
+}

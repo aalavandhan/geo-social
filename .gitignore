@@ -4,3 +4,4 @@ web-app/bower_components
 web-app/node_modules
 web-app/.tmp
 web-app/.sass-cache
+web-app/dist/*

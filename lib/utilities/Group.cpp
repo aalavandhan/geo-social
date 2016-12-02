@@ -7,10 +7,9 @@ Group::Group(){
     finished_flag = false;
     m = 0;
     max_dist = 0;
-    f = (char*) malloc(sizeof(char)*3);
     score = 0;
-    tmp =  new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
-	tmpAnother =  new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
+    // tmp =  new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
+	// tmpAnother =  new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
 }
 
 
@@ -20,43 +19,61 @@ Group::Group(res_point* user, int cardinality, char* function){
     adist = user->dist;
     user_dist = user->dist;
     max_dist = user->dist;
-    f = (char*) malloc(sizeof(char)*3);
-    f = strcpy(f, function);
-    friends = new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
-    tmp =  new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
-	tmpAnother =  new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
+    // friends = new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
+    // tmp =  new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
+	// tmpAnother =  new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
     longest_dist = user->dist;
     longest_dist_i = 0;
     finished_flag = false;
+    userX = user->x;
+    userY = user->y;
 }
 
 
 Group::Group(res_point* user){
     m = MAXSC;
-	score = 0;
     id = user->id;
     adist = user->dist;
     user_dist = user->dist;
     max_dist = user->dist;
-    friends = new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
-    tmp =  new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
-	tmpAnother =  new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
+    // friends = new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
+    // tmp =  new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
+	// tmpAnother =  new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
     longest_dist = user->dist;
-    f = (char*) malloc(sizeof(char)*3);
-    f = strcpy(f, (char *)"sum");
     longest_dist_i = 0;
     finished_flag = false;
 
+	userX = user->x;
+	userY = user->y;
+}
+
+
+Group::Group(Point* user){
+    m = MAXSC;
+    id = user->getID();
+    adist = user->getMinDist();
+    user_dist = user->getMinDist();
+    max_dist = user->getMinDist();
+    // friends = new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
+    // tmp =  new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
+	// tmpAnother =  new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
+    longest_dist = user->getMinDist();
+    longest_dist_i = 0;
+    finished_flag = false;
+
+	userX = user->getX();
+	userY = user->getY();
 }
 
 
 Group::~Group(){
-
-    while(!friends->empty()) {
-        delete friends->top();
-        friends->pop();
-    }
-    delete friends;
+	if(friends!=NULL){
+		while(!friends->empty()) {
+			delete friends->top();
+			friends->pop();
+		}
+		delete friends;
+	}
 }
 
 
@@ -68,51 +85,44 @@ Group::Group(Group* g){
     longest_dist = g->longest_dist;
     max_dist = g->max_dist;
     finished_flag = g->finished_flag;
-    f = (char*) malloc(sizeof(char)*3);
-    f = strcpy(f, g->f);
-    friends = new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
-    tmp =  new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
-	tmpAnother =  new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
-    priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>* temporary = new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
+    // f = (char*) malloc(sizeof(char)*3);
+    // f = strcpy(f, g->f);
+    // friends = new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
+    // tmp =  new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
+	// tmpAnother =  new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
+    userX = g->userX;
+    userY = g->userY;
     score = g->score;
 
-    // cout << "---------------------------------------------- 1" <<endl;
+	if(g->friends != NULL && !g->friends->empty()){
+		friends = new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
+		priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>* temporary = new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
 
-    while(!g->friends->empty()) {
-        res_point* c = g->friends->top();
-        friends->push(util.copy(c));
-        temporary->push(c);
-        g->friends->pop();
-    }
+		while(g->friends != NULL && !g->friends->empty()) {
+			res_point* c = g->friends->top();
+			friends->push(util.copy(c));
+			temporary->push(c);
+			g->friends->pop();
+		}
 
-    while(!temporary->empty()) {
-        res_point* c = temporary->top();
-        g->friends->push(c);
-        temporary->pop();
-    }
-    //cout << "---------------------------------------------- 2" <<endl;
-    //delete tmp;
+		while(temporary!=NULL && !temporary->empty()) {
+			res_point* c = temporary->top();
+			g->friends->push(c);
+			temporary->pop();
+		}
+	}
 }
 
-
-double Group::getBestDist(){
-    if(strcmp(f, "sum"))
-        return adist;
-    else
-        return max_dist;
-
-}
-
-double Group::getMaxDist(){
-        return max_dist;
-
-}
 
 
 double Group::getAdist(){
     return adist;
 }
 
+
+int Group::getId(){
+    return id;
+}
 
 priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>* Group::getFriends(){
     return friends;
@@ -121,6 +131,10 @@ priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>* Group:
 
 
 void Group::addFriend(res_point* _friend){
+
+	if(friends == NULL){
+		 friends = new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
+	}
     friends->push(util.copy(_friend));
 
     if(friends->size() < m){
@@ -168,38 +182,48 @@ double Group::getLongestDistance(){
 
 
 int Group::size(){
-    return friends->size()+1;
+	if(friends!=NULL)
+		return friends->size()+1;
+	else
+		return 0;
 }
 
 
 void Group::print(){
-    // cout <<"--------------------------------------" << endl;
-    cout << id << "," << user_dist*(EARTH_CIRCUMFERENCE/360) << "," << score << "," << friends->size() << endl;
-
+ //    cout <<"--------------------------------------" << endl;
  //    cout << "User ID = " << id << " distance = " << user_dist <<" | "<<user_dist*(EARTH_CIRCUMFERENCE/360)<<" km"<<endl;
-	// cout<<"Friends Size = "<<friends->size()<<endl;
- //    cout << "Friends = {";
-    priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>* tmp = new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
+	// cout << "Lat: " << userX << " | " <<"Lon: " << userY <<endl;
 
-    while(!friends->empty()) {
-        res_point* c = friends->top();
-        tmp->push(c);
-        friends->pop();
+    int fSize;
+    if(friends!=NULL){
+        fSize = friends->size();
+    } else {
+        fSize = 0;
     }
+    cout << id << "," << user_dist*(EARTH_CIRCUMFERENCE/360) << "," << userX <<","<< userY << "," << adist*(EARTH_CIRCUMFERENCE/360) << "," << max_dist*(EARTH_CIRCUMFERENCE/360)  << "," << score << "," << fSize <<endl;
+	if(friends!=NULL){
+		// cout<<"Friends Size = "<<friends->size()<<endl;
+		if(friends->size() > 0){
+			// cout << "Friends = {";
+			priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>* tmp = new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
 
-    while(!tmp->empty()) {
-        res_point* c = tmp->top();
-        friends->push(c);
-        // cout << "(" << c->id << ", " << c->dist <<" | "<<c->dist*(EARTH_CIRCUMFERENCE/360)<<" km"<< "), ";
-        cout << c->id << "," << c->dist *(EARTH_CIRCUMFERENCE/360) << endl;
-        tmp->pop();
-    }
-	if(friends->empty()){
-		// cout << "}" << endl;
-    }
-	else{
-		// cout << "\b\b}" << endl;
-    }
+			while(!friends->empty()) {
+				res_point* c = friends->top();
+				tmp->push(c);
+				friends->pop();
+			}
+
+			while(!tmp->empty()) {
+				res_point* c = tmp->top();
+				friends->push(c);
+				// cout << "(" << c->id << ", " << c->dist <<" | "<<c->dist*(EARTH_CIRCUMFERENCE/360)<<" km"<< "), ";
+                // cout << "Lat: " << c->x << " | " <<"Lon: " << c->y <<endl;
+                cout << c->id << "," << c->dist <<"," << c->dist*(EARTH_CIRCUMFERENCE/360) << ","<< c->x <<","<< c->y << endl;
+				tmp->pop();
+			}
+            // cout << "\b\b}" << endl;
+		}
+	}
     // cout << "adist = " << adist <<" | "<<adist*(EARTH_CIRCUMFERENCE/360)<<" km"<<endl;
     // cout << "max_dist = " << max_dist <<" | "<<max_dist*(EARTH_CIRCUMFERENCE/360)<<" km"<<endl;
     // cout << "user score = " << score << endl;
@@ -217,16 +241,19 @@ struct int_comparator_descending{
 
 void Group::removeDuplicates(){
 
+	if(friends == NULL)
+		return;
+
 //    cout << "friends size = "<<friends->size()<<endl;
     //    vector<res_point*>* vectorFriends = new vector<res_point*>();
-    set<int, int_comparator_descending>* seen_users = new set<int, int_comparator_descending>();
-
+    set<int, int_comparator_descending> seen_users;
+	priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>* tmp = new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
     while (!friends->empty())
     {
         int userID = friends->top()->id;
-        if(seen_users->find(userID)==seen_users->end()){
+        if(seen_users.find(userID)==seen_users.end()){
 //            cout<<" seen users added id:"<<userID<<endl;
-            seen_users->insert(userID);
+            seen_users.insert(userID);
             tmp->push(util.copy(friends->top()));
         }
         friends->pop();
@@ -240,11 +267,18 @@ void Group::removeDuplicates(){
 
 
 vector<int> Group::giveFriends(){
-
+	vector<int> friendList;
+	if(friends == NULL || friends->empty())
+		return friendList;
 //    cout << "friends size = "<<friends->size()<<endl;
     //    vector<res_point*>* vectorFriends = new vector<res_point*>();
-	vector<int> friendList;
-    while (!friends->empty())
+
+	priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>* tmpAnother = NULL;
+	if (!friends->empty()){
+		tmpAnother =  new priority_queue<res_point*, vector<res_point*>, res_point_ascending_dist>();
+	}
+
+    while ( !friends->empty())
     {
 		tmpAnother->push(util.copy(friends->top()));
         int userID = friends->top()->id;

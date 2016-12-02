@@ -7,12 +7,16 @@ private:
     int computedNN, returnedNN, finalNextNN;
     Utilities util;
 
+	map<int, double*> cachedLocs;
+	map<int, double*>::iterator cache;
+
     bool flagNextNN;
 
     int kNNExecutions;
     int LocationExecutions;
     int NextNNExecutions;
     int RangeExecutions;
+	int cacheHits;
 
     double totalCPUTime;
     double totalTime;
@@ -34,6 +38,7 @@ public:
 
     virtual void getLocation(int id, double* result);
     virtual res_point* getNextNN(double x, double y, int incrStep);
+	virtual res_point* getNextNN(double x, double y);
     virtual vector<res_point*>* getkNN(double x, double y, int k); // if computeTime == 1, then measure the time needed
     virtual vector<res_point*>* getRange(double x, double y, double radius);
     virtual set<res_point*, res_point_ascending_id>* getSetRange(double x, double y, double radius);
@@ -45,10 +50,13 @@ public:
     int getLocationExecutions();
     int getNextNNExecutions();
     int getRangeExecutions();
+	int getCacheHits();
 
     double getTotalCPUTime();
     double getTotalTime();
-
+	
+	void clearExecutionHistory();
+	
     void setMeasurekNNTime(bool set);
 
 };

@@ -23,7 +23,8 @@ GPOs_D::GPOs_D(int port, char* host) {
     LocationExecutions = 0;
     NextNNExecutions = 0;
     RangeExecutions = 0;
-
+	cacheHits = 0;
+	
     totalTime = totalCPUTime = 0.0;
     measurekNNTime = true;
 }
@@ -36,6 +37,10 @@ void GPOs_D::setMeasurekNNTime(bool set){
     measurekNNTime = set;
 }
 
+void GPOs_D::clearExecutionHistory(){
+	kNNExecutions = LocationExecutions = NextNNExecutions = RangeExecutions = cacheHits = 0;
+	cachedLocs.clear();
+}
 
 double GPOs_D::getTotalCPUTime(){
     return totalCPUTime;
@@ -45,9 +50,11 @@ double GPOs_D::getTotalTime(){
     return totalTime;
 }
 
+int GPOs_D::getCacheHits(){
+    return cacheHits;
+}
 
 vector<res_point*>* GPOs_D::getRangeSortedId(double x, double y, double radius){
-
     // to be implemented
     return NULL;
 }
@@ -58,110 +65,127 @@ void GPOs_D::getLocation(int id, double* result){
     struct timeval start, end;
     gettimeofday(&start, NULL);
     startC = clock();
+	LocationExecutions++;
+	
+	cache = cachedLocs.find(id);
+	
+	if(cache != cachedLocs.end()){
+		double* res = cache->second;
+		result[0] = res[0];
+		result[1] = res[1];
+		//cout<<"CACHE HIT !!! x = "<<res[0]<<" y = "<<res[1]<<endl;
+		cacheHits++;
+	}
+	else{
+		sockfd = socket(AF_INET, SOCK_STREAM, 0);
+		if (sockfd < 0)
+			cout << "ERROR opening socket" << endl;
 
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd < 0)
-        cout << "ERROR opening socket" << endl;
+		if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0)
+			cout << "ERROR connecting" << endl;
+		
+		bzero(buffer,256);
 
-    if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0)
-        cout << "ERROR connecting" << endl;
-    
-    bzero(buffer,256);
+		stringstream x;
+		x << "getLocation_" << id;
+		string tmp = x.str();
+		int streamSize = tmp.size() + 10;
+		stringstream fixedLengthStream;
+		fixedLengthStream << setfill('0') << setw(9) << streamSize << "_";
+		tmp = fixedLengthStream.str() + tmp ;
+		//cout <<"sending string: "<<tmp<<" -- of size = "<<tmp.size()<<endl;
+		char *sentBuffer = new char[tmp.size()+1];
+		sentBuffer[tmp.size()]='\0';
+		memcpy(sentBuffer,tmp.c_str(),tmp.size());
+		void *p = sentBuffer;
+		while (streamSize > 0) {
+			int bytes_written = write(sockfd, p, streamSize);
+			if (bytes_written <= 0) {
+			cout<<"ERROR writing to socket";
+			}
+			streamSize -= bytes_written;
+			p += bytes_written;
+		}
+		
+		bzero(buffer,256);
 
-    stringstream x;
-    x << "getLocation_" << id;
-    string tmp = x.str();
-    int streamSize = tmp.size() + 10;
-    stringstream fixedLengthStream;
-    fixedLengthStream << setfill('0') << setw(9) << streamSize << "_";
-    tmp = fixedLengthStream.str() + tmp ;
-    //cout <<"sending string: "<<tmp<<" -- of size = "<<tmp.size()<<endl;
-    char *sentBuffer = new char[tmp.size()+1];
-    sentBuffer[tmp.size()]='\0';
-    memcpy(sentBuffer,tmp.c_str(),tmp.size());
-    void *p = sentBuffer;
-    while (streamSize > 0) {
-	    int bytes_written = write(sockfd, p, streamSize);
-	    if (bytes_written <= 0) {
-		cout<<"ERROR writing to socket";
-	    }
-	    streamSize -= bytes_written;
-	    p += bytes_written;
-    }
-    
-    bzero(buffer,256);
+		n = read(sockfd,buffer,255);    
+		if (n < 0)
+		 cout << "ERROR reading from socket" << endl;
+		
+		//cout<<"buffer = "<<buffer<<endl;
+		
+		char bytesCount[10];
+		strncpy ( bytesCount,buffer, 9 );
+		bytesCount[9]='\0';
+		int bytes_read = atoi(bytesCount);
+		
+		int bigBufSize = bytes_read-10;
+		char bigBuffer[bigBufSize+1];
+		bzero(bigBuffer,bigBufSize+1);
+		strncpy ( bigBuffer, &buffer[10], n-10 );
 
-    n = read(sockfd,buffer,255);    
-    if (n < 0)
-	 cout << "ERROR reading from socket" << endl;
-    
-    //cout<<"buffer = "<<buffer<<endl;
-    
-    char bytesCount[10];
-    strncpy ( bytesCount,buffer, 9 );
-    bytesCount[9]='\0';
-    int bytes_read = atoi(bytesCount);
-    
-    int bigBufSize = bytes_read-10;
-    char bigBuffer[bigBufSize+1];
-    bzero(bigBuffer,bigBufSize+1);
-    strncpy ( bigBuffer, &buffer[10], n-10 );
+		//cout<<"BIGbuffer = "<<bigBuffer<<endl;
 
-    //cout<<"BIGbuffer = "<<bigBuffer<<endl;
+		//cout <<"total bytes to be read: "<<bytes_read<<endl;
+		bytes_read= bytes_read - n;
+		//cout <<"total bytes left: "<<bytes_read<<endl;
+		bzero(buffer,256);
+		int arrayPos = n-10;
+		while(bytes_read > 0){
+		  //cout <<"bytes to be read: "<<bytes_read<<endl;
+		  //cout<<"BIGbuffer = "<<bigBuffer<<endl;
+		  n = read(sockfd,&bigBuffer[arrayPos],bigBufSize-arrayPos);
+		  if (n < 0){
+			  cout << "ERROR reading from socket" << endl;
+		  }
+		  //cout<<"BIGbuffer after copy = "<<bigBuffer<<endl;
+		  arrayPos += n;
+		  bytes_read = bytes_read - n;
+		  //cout <<"bytes to be read: "<<bytes_read<<endl;
+		 }
+		 bigBuffer[bigBufSize]='\0';
 
-    //cout <<"total bytes to be read: "<<bytes_read<<endl;
-    bytes_read= bytes_read - n;
-    //cout <<"total bytes left: "<<bytes_read<<endl;
-    bzero(buffer,256);
-    int arrayPos = n-10;
-    while(bytes_read > 0){
-      //cout <<"bytes to be read: "<<bytes_read<<endl;
-      //cout<<"BIGbuffer = "<<bigBuffer<<endl;
-	  n = read(sockfd,&bigBuffer[arrayPos],bigBufSize-arrayPos);
-	  if (n < 0){
-	      cout << "ERROR reading from socket" << endl;
-	  }
-	  //cout<<"BIGbuffer after copy = "<<bigBuffer<<endl;
-	  arrayPos += n;
-	  bytes_read = bytes_read - n;
-	  //cout <<"bytes to be read: "<<bytes_read<<endl;
-     }
-     bigBuffer[bigBufSize]='\0';
+	   // cout<<"BIGbuffer = "<<bigBuffer<<endl;
+	   // cout<<"BIGbuffer size = "<<sizeof(bigBuffer)<<endl;
 
-   // cout<<"BIGbuffer = "<<bigBuffer<<endl;
-   // cout<<"BIGbuffer size = "<<sizeof(bigBuffer)<<endl;
+		//        cout << "Buffer = " << buffer << endl;
 
-    //        cout << "Buffer = " << buffer << endl;
+		char* split = strtok(bigBuffer, "_");
+		result[0] = atof(split);
 
-    char* split = strtok(bigBuffer, "_");
-    result[0] = atof(split);
+		split = strtok(NULL, "_");
+		result[1] = atof(split);
 
-    split = strtok(NULL, "_");
-    result[1] = atof(split);
+		double *loc = new double[2];
+		loc[0] = result[0]; 
+		loc[1] = result[1];
 
-    close(sockfd);
+		cachedLocs.insert(make_pair(id, loc));
 
-    /*	auto_ptr<DBClientCursor> cursor = c.query(coll, QUERY( "user" << id ) );
-    vector< BSONElement > v;
-    LocationExecutions++;
+		close(sockfd);
 
-    while( cursor->more() ) {
-            BSONObj p = cursor->next();
-            v = p.getField("loc").Array();
-        result[0] = v[0].Double();
-        result[1] = v[1].Double();
+		/*	auto_ptr<DBClientCursor> cursor = c.query(coll, QUERY( "user" << id ) );
+		vector< BSONElement > v;
+		LocationExecutions++;
 
-        endC = clock();
-            totalCPUTime += (((double)(endC-startC)*1000.0)/(CLOCKS_PER_SEC));
-            gettimeofday(&end, NULL);
-            totalTime += util.print_time(start, end);
-        return;
-    }
+		while( cursor->more() ) {
+				BSONObj p = cursor->next();
+				v = p.getField("loc").Array();
+			result[0] = v[0].Double();
+			result[1] = v[1].Double();
 
-    result[0] = -1000;
-    result[1] = -1000;
-*/
+			endC = clock();
+				totalCPUTime += (((double)(endC-startC)*1000.0)/(CLOCKS_PER_SEC));
+				gettimeofday(&end, NULL);
+				totalTime += util.print_time(start, end);
+			return;
+		}
 
+		result[0] = -1000;
+		result[1] = -1000;
+	*/
+	}
     endC = clock();
     totalCPUTime += (((double)(endC-startC)*1000.0)/(CLOCKS_PER_SEC));
     gettimeofday(&end, NULL);
@@ -293,7 +317,7 @@ vector<res_point*>* GPOs_D::getkNN(double x, double y, int k){
 	r++; 
       }
       
-    cout<<"size of result vector = " <<resultVec->size()<<endl;
+    //cout<<"size of result vector = " <<resultVec->size()<<endl;
     close(sockfd);
 
     /*
@@ -317,7 +341,7 @@ vector<res_point*>* GPOs_D::getkNN(double x, double y, int k){
         totalTime += util.print_time(start, end);
     }
 
-    cout<<"closing function"<<endl;
+    //cout<<"closing function"<<endl;
     return resultVec;
 }
 
@@ -333,14 +357,12 @@ vector<res_point*>* GPOs_D::getRange(double x, double y, double radius){
     }    
     kNNExecutions++;
 
-    cout<<"opening socket... ...";
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd < 0)
         cout << "ERROR opening socket" << endl;
 
     if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0)
         cout << "ERROR connecting" << endl;
-    cout<<"connected"<<endl;
 
     stringstream po;
     po.precision(15);
@@ -371,14 +393,14 @@ vector<res_point*>* GPOs_D::getRange(double x, double y, double radius){
     if (n < 0)
 	 cout << "ERROR reading from socket" << endl;
     
-    cout << " N IS =" <<n<<endl;
+    //cout << " N IS =" <<n<<endl;
     
     if(n<10){
       cout<<"FUCKING N IS LESS THAN 10"<<endl;
       exit(-1);
     }
     
-    cout<<"buffer = "<<buffer<<endl;
+    //cout<<"buffer = "<<buffer<<endl;
     
     char bytesCount[10];
     strncpy ( bytesCount,buffer, 9 );
@@ -390,32 +412,32 @@ vector<res_point*>* GPOs_D::getRange(double x, double y, double radius){
     bzero(bigBuffer,bigBufSize+1);
     strncpy ( bigBuffer, &buffer[10], n-10 );
 
-    cout<<"BIGbuffer = "<<bigBuffer<<endl;
+    //cout<<"BIGbuffer = "<<bigBuffer<<endl;
 
-    cout <<"total bytes to be read: "<<bytes_read<<endl;
+    //cout <<"total bytes to be read: "<<bytes_read<<endl;
     bytes_read= bytes_read - n;
-    cout <<"total bytes left: "<<bytes_read<<endl;
+    //cout <<"total bytes left: "<<bytes_read<<endl;
     bzero(buffer,256);
     int arrayPos = n-10;
     while(bytes_read > 0){
-      cout <<"bytes to be read: "<<bytes_read<<endl;
-      cout<<"BIGbuffer = "<<bigBuffer<<endl;
+      //cout <<"bytes to be read: "<<bytes_read<<endl;
+      //cout<<"BIGbuffer = "<<bigBuffer<<endl;
 	  n = read(sockfd,&bigBuffer[arrayPos],bigBufSize-arrayPos);
-	  cout << " N IS NOW =" <<n<<endl;
-	  cout << "BIGBUFSIzE  = "<<bigBufSize<<endl;
-	  cout << "bigBufSize - arrayPos = " <<bigBufSize-arrayPos<<endl;
+	  //cout << " N IS NOW =" <<n<<endl;
+	  //cout << "BIGBUFSIzE  = "<<bigBufSize<<endl;
+	  //cout << "bigBufSize - arrayPos = " <<bigBufSize-arrayPos<<endl;
 	  if (n < 0){
 	      cout << "ERROR reading from socket" << endl;
 	  }
-	  cout<<"BIGbuffer after copy = "<<bigBuffer<<endl;
+	  //cout<<"BIGbuffer after copy = "<<bigBuffer<<endl;
 	  arrayPos+=n;
 	  bytes_read = bytes_read - n;
-	  cout <<"bytes to be read: "<<bytes_read<<endl;
+	  //cout <<"bytes to be read: "<<bytes_read<<endl;
      }
      bigBuffer[bigBufSize]='\0';
 
-    cout<<"BIGbuffer = "<<bigBuffer<<endl;
-    cout<<"BIGbuffer size = "<<sizeof(bigBuffer)<<endl;
+    //cout<<"BIGbuffer = "<<bigBuffer<<endl;
+    //cout<<"BIGbuffer size = "<<sizeof(bigBuffer)<<endl;
     
     vector<res_point*>* resultVec = new vector<res_point*>();
     
@@ -455,9 +477,9 @@ vector<res_point*>* GPOs_D::getRange(double x, double y, double radius){
       }
       
     //cout<<"size of result vector = " <<resultVec->size()<<endl;
-    cout<<"closing socket .... ...";
+   // cout<<"closing socket .... ...";
     close(sockfd);
-  cout<<"closed!"<<endl;
+ //cout<<"closed!"<<endl;
 
 
     /*
@@ -647,7 +669,12 @@ clock_t startC, endC;
     return resultSet;
 }
 
-
+res_point* GPOs_D::getNextNN(double x, double y){
+	//To be implemented
+	
+	res_point* rp = new res_point;
+	return rp;
+}
 res_point* GPOs_D::getNextNN(double x, double y, int incrStep){
     clock_t startC, endC;
     struct timeval start, end;
@@ -684,7 +711,6 @@ res_point* GPOs_D::getNextNN(double x, double y, int incrStep){
             flagNextNN = false;
             computedNN = newNNsize;
         }
-
     }
 
     //	if(computedNN > returnedNN && flagNextNN){

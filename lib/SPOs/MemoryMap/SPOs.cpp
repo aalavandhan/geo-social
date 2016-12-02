@@ -1,8 +1,9 @@
 #include "../../headersMemory.h"
 
-SPOs::SPOs() {
+SPOs::SPOs() { 
     areFriendsExecutions = getFriendsExecutions = 0;
     totalCPUTime = totalTime = 0.0;
+
 }
 
 double SPOs::getTotalCPUTime(){
@@ -21,6 +22,11 @@ int SPOs::getGetFriendsExecutions(){
     return getFriendsExecutions;
 }
 
+multiset<my_pair, pair_comparator_descending>* SPOs::getDegreeSet(){
+    return degreeSet;
+}
+
+
 /*
 loads the social graph into a map/hashtable containing
 (id, value) pair. The "value" data structure stores the
@@ -28,34 +34,71 @@ ids of all friends of a given user.
 */
 int SPOs::load(const char* file){
 
+	CH_DEG = new map<int,double>();
+
+
     ifstream fin(file);
     if (!fin){
         cout << "Cannot open Social graph file " << file << endl;
-        // return -1;
+        return -1;
     }
 
+	//degreeMap =  new map<int, int>():
+	degreeSet = new multiset<my_pair, pair_comparator_descending>();
     int id, size;
     unsigned int times = 0;
     int totalFriends = 0;
-    // cout << "Loading the Social Graph from " << file << endl;
+    cout << "Loading the Social Graph from " << file << endl;
     Value* entry;
     while(fin){ //NUMOFUSERS
 
         fin >> id >> size;
         if (! fin.good()){
-            // cout << "fin is not good: id = " << id << endl;
+            cout << "fin is not good: id = " << id << endl;
             continue;
         }
-
+		
+		/*
+		auto it = CH_DEG->find(size);
+		if(it!= CH_DEG->end()){
+		it->second = it->second +1;
+		}
+		else{
+			CH_DEG->insert(make_pair(size,1));
+		}
+		*/
+		
+		// maxS.push_back(size);
+		// if(size>maxS)
+			// maxS = size;
+		
+		//degreeMap->insert(make_pair(id,size));
+		
+		unordered_set<int>* friend_set;
+		if(size!=0)
+			friend_set = new unordered_set<int>();
+		else
+			friend_set = NULL;
+			
+		degreeSet->insert(my_pair(id,((double)size/(double)MAXSC)));
         entry = new Value(size, id);
-
+		
         int* list = (int*) malloc(sizeof(int)*size);
         totalFriends+=sizeof(int)*size;
         for(int i = 0; i<size; i++){
             fin >> list[i];
+			friend_set->insert(list[i]);
         }
         entry->setList(list, size);
-
+		
+		socialgraph_map->insert(make_pair(id, friend_set));
+		// cout<<"Inserting user Id; "<<id<<" and size: ";
+		// if(size == 0)
+			// cout<<"NULL"<<endl;
+		// else	
+			// cout<<friend_set->size()<<endl;
+		
+		
         //ids.push_back(id);
 
         hashTable.insert(pair<int, Value*>(id, entry));
@@ -64,72 +107,40 @@ int SPOs::load(const char* file){
         if(times%1000000 == 0)
             cout << times << endl;
     }
+	
+	//print out degreeSet
+	// multiset<my_pair,pair_comparator_descending>::iterator itSOC ;
+	// for(itSOC = degreeSet->begin(); itSOC != degreeSet->end(); itSOC++){
+		// my_pair user = *itSOC;
+		// double local_social_score = user.getScore();
+		// int local_user_id = user.getId();
+		// cout << "Social Degree Set - > User ID: "<<local_user_id<<" | Score: "<<local_social_score<<endl;
+	// }
+	
+	
+	// sort(maxS.begin(), maxS.end(), std::greater<int>());
+	// for(int i=0;i<10;i++){
+		// cout<<"MAXSC at i = "<< i <<" is "<<maxS.at(i)<<endl;
+	// }
     fin.clear();
     fin.close();
-    // cout << times << endl;
-    // cout << "Done!" << endl;
-    // cout << "totalFriends = " << (totalFriends/(1024)) << "KB" << endl;
-    return 0;
-}
-
-int SPOs::load(const char* file, int count){
-
-	unsigned int times = 0;
-	int totalFriends = 0;
-	int fileNumber = 0;
-	while(fileNumber < count)	{
-
-		stringstream po;
-		po<<file<<"_"<<fileNumber<<".txt";
-		string tmp = po.str();
-		char *sentBuffer = new char[tmp.size()+1];
-		sentBuffer[tmp.size()]='\0';
-		memcpy(sentBuffer,tmp.c_str(),tmp.size());
-
-		ifstream fin(sentBuffer);
-		if (!fin){
-			cout << "Cannot open Social graph file " << tmp << endl;
-			return -1;
-		}
-
-		int id, size;
-
-		// cout << "Loading the Social Graph from " << tmp <<" ... ";
-		Value* entry;
-		while(fin){ //NUMOFUSERS
-
-			fin >> id >> size;
-			if (! fin.good()){
-				// cout << "fin is not good: id = " << id << endl;
-				continue;
-			}
-
-			entry = new Value(size, id);
-
-			int* list = (int*) malloc(sizeof(int)*size);
-			totalFriends+=sizeof(int)*size;
-			for(int i = 0; i<size; i++){
-				fin >> list[i];
-			}
-			entry->setList(list, size);
-
-			//ids.push_back(id);
-
-			hashTable.insert(pair<int, Value*>(id, entry));
-
-			times++;
-
-		}
-		fin.clear();
-		fin.close();
-		// cout<<" Loaded yet: "<< times<<"\n";
-		fileNumber++;
+	
+	/*
+	// iterate and cumulate the size of users
+	auto prev_it = CH_DEG->begin();
+	auto it = CH_DEG->begin(); ++it;
+	while(it != CH_DEG->end()){
+		it->second = (prev_it->second + it->second)*CONV_PERCENTILE;
+		++prev_it;
+		++it;
 	}
-    // cout << times << endl;
-    // cout << "Done!" << endl;
-    // cout << "totalFriends = " << (totalFriends/(1024)) << "KB" << endl;
+	*/
+	
+    cout << "Users loaded from Social Graph" << times << endl;
+    cout << "totalFriends = " << (totalFriends/(1024)) << "KB" << endl;
     return 0;
 }
+
 
 //void SPOs::addFriendship(int user1, int user2){
 //    // add user1 to the list of user2
@@ -250,6 +261,16 @@ void SPOs::getFriends(int id, int*& friends, unsigned int &numOfFriends){
     totalTime += util.print_time(start, end);
 }
 
+
+unordered_set<int>* SPOs::getFriends(int id){
+	auto it = socialgraph_map->find(id);
+	if(it!=socialgraph_map->end())
+		return it->second; 
+	else
+		return NULL;
+}
+
+
 /*
 iterates through the list of friends of user1 to find
 user2. Returns boolean variable denoting the same.
@@ -297,7 +318,7 @@ bool SPOs::areFriends(int user1, int user2){
 //}
 void SPOs::printTriangles( int id, vector<int> friendList){
 	int num = 0;
-
+	
 	cout << "PRINTING TRIANGLES of user "<<id<<endl;
 	for (unsigned int i = 0; i< friendList.size();i++){
 		for (unsigned int j = i; j< friendList.size();j++){
@@ -306,8 +327,8 @@ void SPOs::printTriangles( int id, vector<int> friendList){
 				num ++;
 			}
 		}
-	}
-	cout<<" | Total triangles = "<<num<<endl;
+	}	
+	cout<<"Total triangles = "<<num<<endl;
 }
 
 int SPOs::getUserDegree(int id){
@@ -318,9 +339,9 @@ int SPOs::getUserDegree(int id){
         //element found;
         v = it->second;
 		if(v!=NULL){
-        degree = v->getListSize();
+			degree = v->getListSize();
 		}
     }
-
+	
 	return degree;
 }

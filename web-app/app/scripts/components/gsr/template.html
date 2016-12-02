@@ -14,22 +14,62 @@
   </div>
 
   <div class="row">
-    <div class="col-md-4">
-      <div class="form-group">
-        <label>Search Radius</label>
-        <rzslider rz-slider-model="radius" rz-slider-options="{ 'floor': 1, 'ceil': 10, 'step': 0.25 }"></rzslider>
+    <div class="col-md-10">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="form-group">
+            <label>Query Type</label>
+            <select ng-model="qType" ng-options="t for t in types" class="form-control"></select>
+          </div>
+        </div>
+
+        <div class="col-md-4" data-ng-if="qType == 'LCA_UD' || qType == 'HGS_UD' || qType == 'GSK_FSKR' ">
+          <div class="form-group">
+            <label>Search Radius</label>
+            <rzslider rz-slider-model="params.radius" rz-slider-options="{ 'floor': 1, 'ceil': 10.0, 'step': 0.1, 'precision': 1 }"></rzslider>
+          </div>
+        </div>
+
+
+        <div class="col-md-4"  data-ng-if="qType == 'LCA_UD' || qType == 'LCA_DD' || qType == 'HGS_UD' || qType == 'HGS_DD' || qType == 'NSG_LAZY' || qType == 'GST_LAZY' || qType == 'GST_EAGER' || qType == 'GSK_NPRU' || qType == 'GSK_NSTP' || qType == 'GSK_FSKR'
+        || qType == 'RCA'">
+          <div class="form-group">
+            <label>Top-K</label>
+            <rzslider rz-slider-model="params.K" rz-slider-options="{ 'floor': 1, 'ceil': 100 } "></rzslider>
+          </div>
+        </div>
+
+        <div class="col-md-4" data-ng-if="qType == 'RCA' || qType == 'LCA_UD' || qType == 'LCA_DD'">
+          <div class="form-group">
+            <label>W</label>
+            <rzslider rz-slider-model="params.W" rz-slider-options="{ 'floor': 0, 'ceil': 1.0, 'step': 0.01, 'precision': 1 } "></rzslider>
+          </div>
+        </div>
+
+        <div class="col-md-4" data-ng-if="qType == 'NSG_LAZY'">
+          <div class="form-group">
+            <label>M</label>
+            <rzslider rz-slider-model="params.M" rz-slider-options="{ 'floor': 0, 'ceil': 10 } "></rzslider>
+          </div>
+        </div>
+
+        <div class="col-md-4" data-ng-if="qType == 'LCA_DD' || qType == 'HGS_DD'">
+          <div class="form-group">
+            <label>y = k<sup>x</sup></label>
+            <rzslider rz-slider-model="params.BPower" rz-slider-options="{ 'floor': 0, 'ceil': 10.0, 'step': 0.1, 'precision': 1 } "></rzslider>
+          </div>
+        </div>
+
+        <div class="col-md-4"  data-ng-if="qType == 'GSK_NSTP' || qType == 'GSK_NPRU'">
+          <div class="form-group">
+            <label>Key Words</label>
+            <tags-input ng-model="params.keywords"></tags-input>
+          </div>
+        </div>
       </div>
     </div>
 
-
-    <div class="col-md-4">
-      <div class="form-group">
-        <label>Top-K</label>
-        <rzslider rz-slider-model="K" rz-slider-options="{ 'floor': 1, 'ceil': 10 }" data-ng-disabled="true"></rzslider>
-      </div>
-    </div>
-
-    <div class="col-md-2 col-md-offset-2">
+    <div class="col-md-2">
       <div class="form-group">
         <label>&nbsp;</label>
         <button class="btn btn-success btn-block"
@@ -40,25 +80,62 @@
   </div>
 
 
-  <div class="row" data-ng-if="results.length > 0">
-    <div class="col-md-6">
-      <h3>Top K-Users</h3>
+  <div class="row" data-ng-show="users.length > 0">
+    <div class="col-md-8">
+      <h3>Top User Group</h3>
       <table class="table">
         <thead>
           <tr>
-            <th>Rank</th>
             <th>User</th>
-            <th>Nearby Friends</th>
+            <th>Distance (KM)</th>
+            <th>Score</th>
+            <th>Cluster</th>
+            <th data-ng-if="qType != 'GSK_NPRU'">Nearby Friends</th>
           </tr>
         </thead>
         <tbody>
-          <tr data-ng-repeat="r in results">
-            <td data-ng-bind="r.rank"></td>
-            <td data-ng-bind="r.userId"></td>
-            <td><a data-ng-bind="r.nFriends" data-ng-click="viewNetwork(r)"></a></td>
+          <tr data-ng-repeat="r in users">
+            <td data-ng-bind="r.id"></td>
+            <td data-ng-bind="r.uDist"></td>
+            <td data-ng-bind="r.score"></td>
+            <td data-ng-bind="clusters[r.id]"></td>
+            <td data-ng-if="qType != 'GSK_NPRU'"><a data-ng-bind="r.nFriends" data-ng-click="viewNetwork(r)"></a></td>
           </tr>
         </tbody>
       </table>
+    </div>
+  </div>
+
+  <div class="row" data-ng-show="places.length > 0">
+    <div class="col-md-8">
+      <h3>Top Points of interest</h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Place</th>
+            <th>Distance (KM)</th>
+            <th>TF-IDF</th>
+            <th>VNP</th>
+            <th>Dist Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-ng-repeat="r in places">
+            <td data-ng-bind="r.id"></td>
+            <td data-ng-bind="r.dist"></td>
+            <td data-ng-bind="r.tfidf"></td>
+            <td data-ng-bind="r.vnp"></td>
+            <td data-ng-bind="r.distScore"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <div class="row" data-ng-show="keywords.length > 0">
+    <div class="col-md-12">
+      <div id="tag-cloud"></div>
     </div>
   </div>
 </div>

@@ -1,6 +1,4 @@
-#ifndef HEADER_H
-#define HEADER_H
-
+// #include <boost/heap/fibonacci_heap.hpp>
 
 #include <iostream>
 #include <sys/time.h>
@@ -9,14 +7,16 @@
 #include <stdlib.h>
 #include <math.h>
 #include <map>
+#include <unordered_map>
+#include <unordered_set>
 
 #include <cstdlib>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string>
 #include <string.h>
 #include <sstream>
 #include <cmath>
+#include <cctype>
 #include <fstream>
 #include <unistd.h>
 #include <list>
@@ -24,7 +24,18 @@
 #include <algorithm>
 #include <iterator>
 #include <iomanip>
-#include <unordered_map>
+#include <cstddef>
+#include <cerrno>
+
+#include <sys/types.h>
+#include <sys/stat.h>
+
+
+#include <stdint.h>
+#include <stdarg.h>
+
+#include <errno.h>
+#include <bitset>
 
 // --------------------- Server
 
@@ -36,6 +47,7 @@
 // --------------------- Server
 #define EARTH_CIRCUMFERENCE 40075.017
 
+#define BOUNDARY_ERROR 0.00000000000001
 using namespace std;
 
 
@@ -52,53 +64,45 @@ using namespace std;
 // #define MAXDIST 39.352          // maximum distance between to points
 
 //austin dataset from Nick
+// #define MAXGROUPSIZE 5868
+// #define MAXSC 390                // maximum number of friends plus one
+// #define MAXDIST 0.48553169497810045          // maximum distance between two points
+
+
+//yelp dataset
+// #define MAXGROUPSIZE 58062
+// #define MAXSC 500                // maximum number of friends plus one
+// #define MAXDIST 2          // maximum distance between two points
+
+//yelp dataset
 #define MAXGROUPSIZE 5868
 extern int MAXSC;                // maximum number of friends plus one
 extern double MAXDIST;          // maximum distance between to points
-extern int MAXT;
-//scallability
-
-// d maxS maxT
-// 10 1239 570
-// 30 2011 4311
-// 50 2931 14354
-// 70 3215 21460
-// 90 3695 34098
-
-
-// Scalability
-// #define MAXGROUPSIZE 1500000
-
-//d=10
-// #define MAXSC 1240               
-// #define MAXT 570
-//d=30
-// #define MAXSC 2012               
-// #define MAXT 4311
-//d=50
-// #define MAXSC 2932               
-// #define MAXT 14354
-//d=70
-// #define MAXSC 3216               
-// #define MAXT 21460
-//d=90
-// #define MAXSC 3696               
-// #define MAXT 34098
-
-// #define MAXDIST 0.89831527707  //correspons to 100km
 
 
 #define EULERS_NUMBER 2.718281828459045
-#define BOUNDARY_ERROR 0.00000000000001
 
+#include <boost/math/distributions/inverse_gaussian.hpp>
 
+#include "GPOs/MemoryGrid/grid/Point.h"
 #include "utilities/res_point.h"
+#include "TPOs/tf_pair.h"
+#include "utilities/my_pair.h"
+#include "utilities/pair_tuple.h"
 #include "utilities/Utilities.h"
 #include "utilities/Group.h"
+#include "utilities/bloom_filter.hpp"
+#include "utilities/running_stat.hpp"
+#include "TPOs/FileIndex.h"
 
 #include "GPOs/IGPOs.h"
 #include "SPOs/ISPOs.h"
 
-#include "basicGSQueries/BasicGSQueries.h"
 
-#endif
+#include "SPOs/MemoryMap/Value.h"
+#include "TPOs/InvertedIndexGen.h"
+
+#include "basicGSQueries/BasicGSQueries.h"
+#include "complexQueries/mGroup.h"
+#include "complexQueries/topkUsers.h"
+

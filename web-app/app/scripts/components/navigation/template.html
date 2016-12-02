@@ -11,9 +11,18 @@
     </div>
 
     <div class="collapse navbar-collapse navbar-collapse" id="navbarLinks">
+      <ul class="nav navbar-nav">
+        <li>
+          <div style="padding-top: 5px;">
+            <select class="form-control"><option>4-Square Las Vegas</option></select>
+          </div>
+        </li>
+      </ul>
+
       <ul class="nav navbar-nav navbar-right">
-        <li data-ng-class="$location.path() == '/api_doc' ? 'active' : '' "><a href="#/api_doc">API Doc</a></li>
-        <li data-ng-class="$location.path() == '/gsr' ? 'active' : '' "><a href="#/gsr">Geo Social Ranking</a></li>
+        <li data-ng-class="$location.path() == '/gsr' ? 'active' : '' "><a href="#/gsr">User Groups</a></li>
+        <li data-ng-class="$location.path() == '/gsp' ? 'active' : '' "><a href="#/gsp">Points of Interest</a></li>
+        <li data-ng-class="$location.path() == '/gsk' ? 'active' : '' "><a href="#/gsk">Keywords</a></li>
       </ul>
     </div>
 

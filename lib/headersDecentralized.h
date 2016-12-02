@@ -35,12 +35,15 @@ using namespace std;
 
 #include "utilities/res_point.h"
 #include "utilities/Utilities.h"
+#include "TPOs/tf_pair.h"
+#include "utilities/my_pair.h"
 #include "utilities/Group.h"
 
 #include "GPOs/IGPOs.h"
 #include "SPOs/ISPOs.h"
 
 #include "basicGSQueries/BasicGSQueries.h"
+#include "complexQueries/topkUsers.h"
 
 #include "GPOs/MemoryGrid/GPOs_D.h"
 #include "SPOs/MemoryMap/SPOs_D.h"

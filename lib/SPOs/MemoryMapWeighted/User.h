@@ -14,6 +14,4 @@ class User{
 		void printUser();
 		void setTotalWeight(double weight);
 		double getTotalWeight();
-		
-
 };

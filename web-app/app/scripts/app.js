@@ -41,6 +41,16 @@ angular
       controller: 'polar.util.controllers.StaticPageController'
     })
 
+    .when('/gsk', {
+      templateUrl: 'app/scripts/sections/query/gsk.html',
+      controller: 'polar.util.controllers.StaticPageController'
+    })
+
+    .when('/gsp', {
+      templateUrl: 'app/scripts/sections/query/gsp.html',
+      controller: 'polar.util.controllers.StaticPageController'
+    })
+
     .otherwise({
       redirectTo: '/index'
     });

@@ -6,14 +6,14 @@
 
     var M = function(){};
 
-    M.open = function(n){
+    M.open = function(user, friends, origin){
       return $uibModal.open({
         animation: true,
         templateUrl: 'app/scripts/components/gsr/social_modal_template.html',
         controller: 'polar.util.controllers.modal.Controller',
         size: 'lg',
         resolve: {
-          data: function(){ return { network: n }; }
+          data: function(){ return { user: user, friends: friends, origin: origin }; }
         }
       }).result;
     };
